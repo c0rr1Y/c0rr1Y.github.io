@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>A</title>
+    <url>/2023/03/12/A/</url>
+    <content><![CDATA[<h2 id="wireshark使用"><a href="#wireshark使用" class="headerlink" title="wireshark使用"></a>wireshark使用</h2><p>wireshark作为流量分析神器，在开始之前，先来简单科普一下它的一些常用的过滤命令。</p>
+<ul>
+<li>过滤查看包含某字符串的http数据包：http contains “string”（tcp同理）</li>
+<li>过滤查看请求某一url的流量：http.request.uri &#x3D;&#x3D; “path”或 http.request.uri contains “path”</li>
+<li>过滤出某一ip的流量：ip.addr &#x3D;&#x3D; ip 或 ip.src &#x3D;&#x3D; ip 或 ip.dst &#x3D;&#x3D; ip</li>
+<li>跟踪显示http请求包与返回包可以Fllow HTTP Stream</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2023/03/12/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>re匹配规则</title>
+    <url>/2023/03/13/re%E5%8C%B9%E9%85%8D%E8%A7%84%E5%88%99/</url>
+    <content><![CDATA[<h2 id="re"><a href="#re" class="headerlink" title="re"></a>re</h2><p><a href="https://blog.csdn.net/guo_qingxia/article/details/113979135">https://blog.csdn.net/guo_qingxia/article/details/113979135</a></p>
+<p>匹配单个字符<br>字符	功能	位置<br>.	匹配任意1个字符（除了\n）	<br>[ ]	匹配[ ]中列举的字符	<br>\d	匹配数字，即0-9	可以写在字符集[…]中<br>\D	匹配⾮数字，即不是数字	可以写在字符集[…]中<br>\s	匹配空⽩，即空格，tab键	可以写在字符集[…]中<br>\S	匹配⾮空⽩字符	可以写在字符集[…]中<br>\w	匹配单词字符，即a-z、A-Z、0-9、_	可以写在字符集[…]中<br>\W	匹配⾮单词字符	可以写在字符集[…]中</p>
+<h3 id="非打印字符"><a href="#非打印字符" class="headerlink" title="非打印字符"></a>非打印字符</h3><p>非打印字符也可以是正则表达式的组成部分。下表列出了表示非打印字符的转义序列：</p>
+<table>
+<thead>
+<tr>
+<th>字符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>\cx</td>
+<td>匹配由x指明的控制字符。例如，<code> \cM</code> 匹配一个 Control-M 或回车符。x 的值必须为 A-Z 或 a-z 之一。否则，将 c 视为一个原义的 ‘c’ 字符。</td>
+</tr>
+<tr>
+<td>\f</td>
+<td>匹配一个换页符。等价于 <code>\x0c</code> 和 <code>\cL</code>。</td>
+</tr>
+<tr>
+<td>\n</td>
+<td>匹配一个换行符。等价于 <code>\x0a </code>和<code> \cJ</code>。</td>
+</tr>
+<tr>
+<td>\r</td>
+<td>匹配一个回车符。等价于 <code>\x0d</code> 和 <code>\cM</code>。</td>
+</tr>
+<tr>
+<td>\s</td>
+<td>匹配任何空白字符，包括空格、制表符、换页符等等。等价于 <code>[ \f\n\r\t\v]</code>。</td>
+</tr>
+<tr>
+<td>\S</td>
+<td>匹配任何非空白字符。等价于<code> [^ \f\n\r\t\v]</code>。</td>
+</tr>
+<tr>
+<td>\t</td>
+<td>匹配一个制表符。等价于<code> \x09</code> 和 <code>\cI</code>。</td>
+</tr>
+<tr>
+<td>\v</td>
+<td>匹配一个垂直制表符。等价于 <code>\x0b</code> 和 <code>\cK</code>。</td>
+</tr>
+</tbody></table>
+<h3 id="特殊字符"><a href="#特殊字符" class="headerlink" title="特殊字符"></a><strong>特殊字符</strong></h3><table>
+<thead>
+<tr>
+<th>特别字符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$</td>
+<td>匹配输入字符串的结尾位置。如果设置了 RegExp 对象的 Multiline 属性，则 $ 也匹配 ‘\n’ 或 ‘\r’。要匹配 $ 字符本身，请使用<code> \$</code>。</td>
+</tr>
+<tr>
+<td>( )</td>
+<td>标记一个子表达式的开始和结束位置。子表达式可以获取供以后使用。要匹配这些字符，请使用 <code>\(</code> 和 <code>\)</code>。</td>
+</tr>
+<tr>
+<td>*</td>
+<td>匹配前面的子表达式零次或多次。要匹配 * 字符，请使用 <code>\*</code>。</td>
+</tr>
+<tr>
+<td>+</td>
+<td>匹配前面的子表达式一次或多次。要匹配 + 字符，请使用 <code>\+</code>。</td>
+</tr>
+<tr>
+<td>.</td>
+<td>匹配除换行符 \n之外的任何单字符。要匹配 .，请使用<code> \.</code>。</td>
+</tr>
+<tr>
+<td>[</td>
+<td>标记一个中括号表达式的开始。要匹配 [，请使用 <code>\[</code>。</td>
+</tr>
+<tr>
+<td>?</td>
+<td>匹配前面的子表达式零次或一次，或指明一个非贪婪限定符。要匹配 ? 字符，请使用<code> \?</code>。</td>
+</tr>
+<tr>
+<td>\</td>
+<td>将下一个字符标记为或特殊字符、或原义字符、或向后引用、或八进制转义符。例如， ‘n’ 匹配字符 ‘n’。’\n’ 匹配换行符。序列 ‘\‘ 匹配 “&quot;，而 ‘(‘ 则匹配 “(“。</td>
+</tr>
+<tr>
+<td>^</td>
+<td>匹配输入字符串的开始位置，除非在方括号表达式中使用，此时它表示不接受该字符集合。要匹配 ^ 字符本身，请使用 <code>\^</code>。</td>
+</tr>
+<tr>
+<td>{</td>
+<td>标记限定符表达式的开始。要匹配 {，请使用<code> \&#123;</code>。</td>
+</tr>
+<tr>
+<td>|</td>
+<td>指明两项之间的一个选择。要匹配 |，请使用 <code>|</code>。</td>
+</tr>
+</tbody></table>
+<h3 id="限定符"><a href="#限定符" class="headerlink" title="限定符"></a><strong>限定符</strong></h3><table>
+<thead>
+<tr>
+<th>字符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>*</td>
+<td>匹配前面的子表达式零次或多次。例如，zo* 能匹配 “z” 以及 “zoo”。* 等价于{0,}。</td>
+</tr>
+<tr>
+<td>+</td>
+<td>匹配前面的子表达式一次或多次。例如，’zo+’ 能匹配 “zo” 以及 “zoo”，但不能匹配 “z”。+ 等价于 {1,}。</td>
+</tr>
+<tr>
+<td>?</td>
+<td>匹配前面的子表达式零次或一次。例如，”do(es)?” 可以匹配 “do” 、 “does” 中的 “does” 、 “doxy” 中的 “do” 。? 等价于 {0,1}。</td>
+</tr>
+<tr>
+<td>{n}</td>
+<td>n 是一个非负整数。匹配确定的 n 次。例如，’o{2}’ 不能匹配 “Bob” 中的 ‘o’，但是能匹配 “food” 中的两个 o。</td>
+</tr>
+<tr>
+<td>{n,}</td>
+<td>n 是一个非负整数。至少匹配n 次。例如，’o{2,}’ 不能匹配 “Bob” 中的 ‘o’，但能匹配 “foooood” 中的所有 o。’o{1,}’ 等价于 ‘o+’。’o{0,}’ 则等价于 ‘o*’。</td>
+</tr>
+<tr>
+<td>{n,m}</td>
+<td>m 和 n 均为非负整数，其中n &lt;&#x3D; m。最少匹配 n 次且最多匹配 m 次。例如，”o{1,3}” 将匹配 “fooooood” 中的前三个 o。’o{0,1}’ 等价于 ‘o?’。请注意在逗号和两个数之间不能有空格。</td>
+</tr>
+</tbody></table>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>反向引用</strong></p>
+<p>对一个正则表达式模式或部分模式 <strong>两边添加圆括号</strong> 将导致相关 <strong>匹配存储到一个临时缓冲区</strong> 中，所捕获的每个子匹配都按照在正则表达式模式中从左到右出现的顺序存储。缓冲区编号从 1 开始，最多可存储 99 个捕获的子表达式。每个缓冲区都可以使用 ‘\n’ 访问，其中 n 为一个标识特定缓冲区的一位或两位十进制数。</p>
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2><h3 id="正则表达式的限定符有："><a href="#正则表达式的限定符有：" class="headerlink" title="正则表达式的限定符有："></a>正则表达式的限定符有：</h3><table>
+<thead>
+<tr>
+<th>字符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>^</td>
+<td>匹配输入字符串开始的位置。如果设置了 RegExp 对象的 Multiline 属性，^ 还会与 <code>\n</code> 或<code> \r</code> 之后的位置匹配。</td>
+</tr>
+<tr>
+<td>$</td>
+<td>匹配输入字符串结尾的位置。如果设置了 RegExp 对象的 Multiline 属性，$ 还会与<code>\n</code>或 <code>\r</code> 之前的位置匹配。</td>
+</tr>
+<tr>
+<td>\b</td>
+<td>匹配一个字边界，即字与空格间的位置。</td>
+</tr>
+<tr>
+<td>\B</td>
+<td>非字边界匹配。</td>
+</tr>
+</tbody></table>
+<h4 id="compile-函数"><a href="#compile-函数" class="headerlink" title="compile 函数"></a>compile 函数</h4><p><a href="https://blog.csdn.net/weixin_42793426/article/details/88545939">(72条消息) 正则表达式re.compile()的使用_艾莉宝贝的博客-CSDN博客_re.compile()</a></p>
+<p><strong>compile 函数用于编译正则表达式，生成一个 Pattern 对象</strong>，它的一般使用形式如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">re.<span class="built_in">compile</span>(pattern[, flag])</span><br><span class="line"> </span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="comment"># 将正则表达式编译成 Pattern 对象 </span></span><br><span class="line">pattern = re.<span class="built_in">compile</span>(<span class="string">r&#x27;\d+&#x27;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>在上面，我们已将一个正则表达式编译成 Pattern 对象，接下来，我们就可以利用 pattern 的一系列方法对文本进行匹配查找了。Pattern 对象的一些常用方法主要有：</p>
+<p>match 方法<br>search 方法<br>findall 方法<br>finditer 方法<br>split 方法<br>sub 方法<br>subn 方法</p>
+<p><strong>Python中要实现字符与ASCII码之间的相互转化可使用Python自带的函数：chr() 和 ord()</strong></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="built_in">int</span>(x [,base ]) 将x转换为一个整数 可以<span class="number">16</span>进制转<span class="number">10</span>进制  <span class="built_in">int</span>(x,<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">long(x [,base ]) 将x转换为一个长整数</span><br><span class="line"></span><br><span class="line"><span class="built_in">float</span>(x ) 将x转换到一个浮点数</span><br><span class="line"></span><br><span class="line"><span class="built_in">complex</span>(real [,imag ]) 创建一个复数</span><br><span class="line"></span><br><span class="line"><span class="built_in">str</span>(x ) 将对象 x 转换为字符串</span><br><span class="line"></span><br><span class="line"><span class="built_in">repr</span>(x ) 将对象 x 转换为表达式字符串</span><br><span class="line"></span><br><span class="line"><span class="built_in">eval</span>(<span class="built_in">str</span> ) 用来计算在字符串中的有效Python表达式,并返回一个对象</span><br><span class="line"></span><br><span class="line"><span class="built_in">tuple</span>(s ) 将序列 s 转换为一个元组</span><br><span class="line"></span><br><span class="line"><span class="built_in">list</span>(s ) 将序列 s 转换为一个列表</span><br><span class="line"></span><br><span class="line"><span class="built_in">chr</span>(x ) 将一个整数转换为一个字符</span><br><span class="line"></span><br><span class="line">unichr(x ) 将一个整数转换为Unicode字符</span><br><span class="line"></span><br><span class="line"><span class="built_in">ord</span>(x ) 将一个字符转换为它的整数值</span><br><span class="line"></span><br><span class="line"><span class="built_in">hex</span>(x ) 将一个整数转换为一个十六进制字符串</span><br><span class="line"></span><br><span class="line"><span class="built_in">oct</span>(x ) 将一个整数转换为一个八进制字符串</span><br><span class="line"></span><br><span class="line"><span class="built_in">bin</span>() 将一个整数转换二进制字符串</span><br></pre></td></tr></table></figure>
+
+]]></content>
+  </entry>
+</search>
