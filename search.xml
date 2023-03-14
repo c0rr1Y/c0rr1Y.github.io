@@ -11,6 +11,12 @@
 <li>跟踪显示http请求包与返回包可以Fllow HTTP Stream</li>
 </ul>
 ]]></content>
+      <categories>
+        <category>CTF</category>
+      </categories>
+      <tags>
+        <tag>流量分析</tag>
+      </tags>
   </entry>
   <entry>
     <title>hexo+github搭建博客</title>
@@ -304,5 +310,8 @@
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="built_in">int</span>(x [,base ]) 将x转换为一个整数 可以<span class="number">16</span>进制转<span class="number">10</span>进制  <span class="built_in">int</span>(x,<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">long(x [,base ]) 将x转换为一个长整数</span><br><span class="line"></span><br><span class="line"><span class="built_in">float</span>(x ) 将x转换到一个浮点数</span><br><span class="line"></span><br><span class="line"><span class="built_in">complex</span>(real [,imag ]) 创建一个复数</span><br><span class="line"></span><br><span class="line"><span class="built_in">str</span>(x ) 将对象 x 转换为字符串</span><br><span class="line"></span><br><span class="line"><span class="built_in">repr</span>(x ) 将对象 x 转换为表达式字符串</span><br><span class="line"></span><br><span class="line"><span class="built_in">eval</span>(<span class="built_in">str</span> ) 用来计算在字符串中的有效Python表达式,并返回一个对象</span><br><span class="line"></span><br><span class="line"><span class="built_in">tuple</span>(s ) 将序列 s 转换为一个元组</span><br><span class="line"></span><br><span class="line"><span class="built_in">list</span>(s ) 将序列 s 转换为一个列表</span><br><span class="line"></span><br><span class="line"><span class="built_in">chr</span>(x ) 将一个整数转换为一个字符</span><br><span class="line"></span><br><span class="line">unichr(x ) 将一个整数转换为Unicode字符</span><br><span class="line"></span><br><span class="line"><span class="built_in">ord</span>(x ) 将一个字符转换为它的整数值</span><br><span class="line"></span><br><span class="line"><span class="built_in">hex</span>(x ) 将一个整数转换为一个十六进制字符串</span><br><span class="line"></span><br><span class="line"><span class="built_in">oct</span>(x ) 将一个整数转换为一个八进制字符串</span><br><span class="line"></span><br><span class="line"><span class="built_in">bin</span>() 将一个整数转换二进制字符串</span><br></pre></td></tr></table></figure>
 
 ]]></content>
+      <tags>
+        <tag>python</tag>
+      </tags>
   </entry>
 </search>
