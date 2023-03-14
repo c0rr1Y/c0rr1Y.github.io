@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>A</title>
+    <url>/2023/03/12/A/</url>
+    <content><![CDATA[<h2 id="wireshark使用"><a href="#wireshark使用" class="headerlink" title="wireshark使用"></a>wireshark使用</h2><p>wireshark作为流量分析神器，在开始之前，先来简单科普一下它的一些常用的过滤命令。</p>
+<ul>
+<li>过滤查看包含某字符串的http数据包：http contains “string”（tcp同理）</li>
+<li>过滤查看请求某一url的流量：http.request.uri &#x3D;&#x3D; “path”或 http.request.uri contains “path”</li>
+<li>过滤出某一ip的流量：ip.addr &#x3D;&#x3D; ip 或 ip.src &#x3D;&#x3D; ip 或 ip.dst &#x3D;&#x3D; ip</li>
+<li>跟踪显示http请求包与返回包可以Fllow HTTP Stream</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
     <title>hexo+github搭建博客</title>
     <url>/2023/03/13/hexo-github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</url>
     <content><![CDATA[<h1 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h1><ol>
@@ -123,18 +135,6 @@
       <tags>
         <tag>建站</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>A</title>
-    <url>/2023/03/12/A/</url>
-    <content><![CDATA[<h2 id="wireshark使用"><a href="#wireshark使用" class="headerlink" title="wireshark使用"></a>wireshark使用</h2><p>wireshark作为流量分析神器，在开始之前，先来简单科普一下它的一些常用的过滤命令。</p>
-<ul>
-<li>过滤查看包含某字符串的http数据包：http contains “string”（tcp同理）</li>
-<li>过滤查看请求某一url的流量：http.request.uri &#x3D;&#x3D; “path”或 http.request.uri contains “path”</li>
-<li>过滤出某一ip的流量：ip.addr &#x3D;&#x3D; ip 或 ip.src &#x3D;&#x3D; ip 或 ip.dst &#x3D;&#x3D; ip</li>
-<li>跟踪显示http请求包与返回包可以Fllow HTTP Stream</li>
-</ul>
-]]></content>
   </entry>
   <entry>
     <title>re匹配规则</title>
