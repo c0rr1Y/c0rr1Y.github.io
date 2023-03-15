@@ -139,144 +139,10 @@
       </tags>
   </entry>
   <entry>
-    <title>hexo+github搭建博客</title>
-    <url>/2023/03/13/hexo-github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</url>
-    <content><![CDATA[<h1 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h1><ol>
-<li>GitHub账号<br>需要有一个GitHub账号，没有的话到 官网 申请一个。<br>注册很简单，不懂的话可以参考 GitHub申请账号</li>
-<li>安装Git<br> 在自己电脑上安装好Git，hexo部署到GitHub时要用。<br> 网上找篇教程</li>
-<li>安装NodeJS<br>在自己电脑上安装好NodeJS，Hexo是基于NodeJS编写的，所以需要安装NodeJS和npm工具。<br>网上找篇教程</li>
-</ol>
-<h1 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h1><p>我们采用Hexo来创建我们的博客网站，Hexo 是一个基于NodeJS的静态博客网站生成器，使用Hexo不需开发，只要进行一些必要的配置即可生成一个个性化的博客网站，非常方便。点击进入 官网。</p>
-<p>安装 Hexo</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
-
-<p>查看版本</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo -v</span><br></pre></td></tr></table></figure>
-
-<p>创建一个项目 hexo-blog 并初始化</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo init hexo-blog</span><br><span class="line"><span class="built_in">cd</span> hexo-blog</span><br><span class="line">npm install</span><br></pre></td></tr></table></figure>
-
-<p>本地启动</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo g</span><br><span class="line">hexo server</span><br></pre></td></tr></table></figure>
-
-
-<p>浏览器访问 <a href="http://localhost:4000，页面默认主图风格如下">http://localhost:4000，页面默认主图风格如下</a></p>
-<img src="/2023/03/13/hexo-github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/image-20230313232222727.png" class="" title="image-20230313232222727">
-
-
-
-
-
-<h1 id="创建仓库"><a href="#创建仓库" class="headerlink" title="创建仓库"></a>创建仓库</h1><p>在<code>GitHub</code>上创建一个新的代码仓库用于保存我们的网页。</p>
-<p>点击<code>Your repositories</code>，进入仓库页面。</p>
-<p>点击<code>New</code>按钮，进入仓库创建页面。</p>
-<p>填写仓库名，格式必须为<code>&lt;用户名&gt;.github.io</code>，然后点击<code>Create repository</code>。</p>
-<p>点击<code>creating a new file</code>创建一个新文件，作为我们网站的主页。</p>
-<h1 id="ssh连接"><a href="#ssh连接" class="headerlink" title="ssh连接"></a>ssh连接</h1><p>4.1生成SSH添加到GitHub</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">git config --global user.name <span class="string">&quot;yourname&quot;</span></span><br><span class="line">git config --global user.email <span class="string">&quot;youremail&quot;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>这里的yourname输入你的GitHub用户名，youremail输入你GitHub的邮箱。这样GitHub才能知道你是不是对应它的账户。</p>
-<p>可以用以下两条，检查一下你有没有输对</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">git config user.name</span><br><span class="line">git config user.email</span><br></pre></td></tr></table></figure>
-
-
-
-<p>然后创建SSH,一路回车</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -C <span class="string">&quot;youremail&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>在gitbash中，查看是否成功</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
-
-
-
-<p>如果失败更改端口</p>
-<p>操作方法：</p>
-<p>进入~&#x2F;.ssh下</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd ~/.ssh</span><br></pre></td></tr></table></figure>
-
-
-<p>创建一个config文件(这里我用的vim编辑器)</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">vim config</span><br></pre></td></tr></table></figure>
-
-
-<p>编辑文件内容：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Host github.com</span><br><span class="line">User git</span><br><span class="line">Hostname ssh.github.com</span><br><span class="line">PreferredAuthentications publickey</span><br><span class="line">IdentityFile ~/.ssh/id_rsa</span><br><span class="line">Port 443</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>保存退出<br>检查是否成功</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
-
-<h1 id="将hexo部署到GitHub"><a href="#将hexo部署到GitHub" class="headerlink" title="将hexo部署到GitHub"></a>将hexo部署到GitHub</h1><p>这个时候需要先安装deploy-git ，也就是部署的命令,这样你才能用命令部署到GitHub。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
-
-
-
-<p>这一步，我们就可以将hexo和GitHub关联起来，也就是将hexo生成的文章部署到GitHub上，打开站点配置文件 _config.yml，翻到最后，修改为<br>YourgithubName就是你的GitHub账户</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  <span class="built_in">type</span>: git</span><br><span class="line">  repo: https://github.com/YourgithubName/YourgithubName.github.io.git</span><br><span class="line">  branch: main</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-<p>然后</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
-
-
-
-<p>若启动连接失败，输入以下命令</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">git config --global --<span class="built_in">unset</span> http.proxy</span><br><span class="line">git config --global --<span class="built_in">unset</span> https.proxy</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h1 id="模板导入"><a href="#模板导入" class="headerlink" title="模板导入"></a>模板导入</h1><p>在hexo项目根目录下执行操作clone主题</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> -b master https://github.com/jerryc127/hexo-theme-butterfly.git themes/butterfly</span><br></pre></td></tr></table></figure>
-
-<p>如果沒有 pug 以及 <a href="https://so.csdn.net/so/search?q=stylus&spm=1001.2101.3001.7020">stylus</a> 的渲染器，还需要下载，否则在项目运行时会报错：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm install hexo-renderer-pug hexo-renderer-stylus --save</span><br></pre></td></tr></table></figure>
-
-<p>3、修改项目根目录下的_config.yml文件（称为站点配置文件），开启主题</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment">#theme: landscape</span></span><br><span class="line">theme: butterfly</span><br></pre></td></tr></table></figure>
-
-
-
-<p>若出现乱码</p>
-<p>原因是<a href="https://so.csdn.net/so/search?q=hexo&spm=1001.2101.3001.7020">hexo</a>在5.0之后把swig给删除了需要自己手动安装</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm i hexo-renderer-swig</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-<h2 id="解决：hexo-github本地和线上图片不显示问题"><a href="#解决：hexo-github本地和线上图片不显示问题" class="headerlink" title="解决：hexo+github本地和线上图片不显示问题"></a>解决：hexo+github本地和线上图片不显示问题</h2><p>在搭载好hexo(butterfly)+github博客后（有道云笔记记录），新建博客无法图片问题，多方寻找网上的解决办法仍未解决，大多安装了hexo-asset-image插件来解决，但是本人多项测试后，均为无效，唯一有效的需要将图片格式转换为这样，但是以一个一个去转换非常麻烦，因此继续寻求解决办法，最终找到如下帖子：<a href="https://moeci.com/posts/hexo-typora/%EF%BC%8C%E8%BF%99%E4%BD%8D%E5%A4%A7%E4%BD%AC%E5%BC%80%E5%8F%91%E7%9A%84%E6%8F%92%E4%BB%B6%E6%98%AFhexo-asset-img%EF%BC%8C%E8%80%8C%E9%9D%9Ehexo-asset-image%EF%BC%8C%E7%BB%8F%E8%BF%87%E6%B5%8B%E8%AF%95%EF%BC%8C%E6%9C%89%E6%95%88">https://moeci.com/posts/hexo-typora/，这位大佬开发的插件是hexo-asset-img，而非hexo-asset-image，经过测试，有效</a></p>
-<p>1配置 <a href="https://so.csdn.net/so/search?q=Typora&spm=1001.2101.3001.7020">Typora</a> 偏好设置，如下图更改，此操作将图片文件保存路径: .&#x2F;${filename} 即保存到与 当前正在编辑的文件名相同的同级文件夹下。</p>
-<img src="/2023/03/13/hexo-github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/image-20230313233951219.png" class="" title="image-20230313233951219">
-
-
-
-<p>修改_config.yml中的post_asset_folder，false 改为 true，这样修改后，每次 ‘hexo new page’ 生成新文章，都会在文章文件同级目录创建一个与文章文件名同名的文件夹，我们就在这里存放此文章的图片。</p>
-<p>安装插件hexo-asset-img：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install hexo-asset-img --save</span><br><span class="line">hexo clean &amp;&amp; hexo g &amp;&amp; hexo d</span><br></pre></td></tr></table></figure>
-
-<p>完成安装</p>
-<h2 id="导航栏"><a href="#导航栏" class="headerlink" title="导航栏"></a>导航栏</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo new page <span class="string">&quot;about&quot;</span></span><br><span class="line">hexo new page <span class="string">&quot;tags&quot;</span></span><br><span class="line">hexo new page <span class="string">&quot;categories&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">title: about</span><br><span class="line"><span class="built_in">date</span>: 2019-06-25 19:16:17</span><br><span class="line"><span class="built_in">type</span>: <span class="string">&quot;about&quot;</span></span><br><span class="line">---</span><br><span class="line"> </span><br><span class="line">---</span><br><span class="line">title: about</span><br><span class="line"><span class="built_in">date</span>: 2019-06-25 19:16:17</span><br><span class="line"><span class="built_in">type</span>: <span class="string">&quot;tags&quot;</span></span><br><span class="line">---</span><br><span class="line"> </span><br><span class="line">---</span><br><span class="line">title: about</span><br><span class="line"><span class="built_in">date</span>: 2019-06-25 19:16:17</span><br><span class="line"><span class="built_in">type</span>: <span class="string">&quot;categories&quot;</span></span><br><span class="line">---</span><br></pre></td></tr></table></figure>
-
-<h3 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a><strong>常用命令</strong></h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo new “name”       <span class="comment"># 新建文章</span></span><br><span class="line"></span><br><span class="line">hexo new page “name”  <span class="comment"># 新建页面</span></span><br><span class="line"></span><br><span class="line">hexo g                <span class="comment"># 生成页面</span></span><br><span class="line"></span><br><span class="line">hexo d                <span class="comment"># 部署</span></span><br><span class="line"></span><br><span class="line">hexo g -d             <span class="comment"># 生成页面并部署</span></span><br><span class="line"></span><br><span class="line">hexo s                <span class="comment"># 本地预览</span></span><br><span class="line"></span><br><span class="line">hexo clean            <span class="comment"># 清除缓存和已生成的静态文件</span></span><br><span class="line"></span><br><span class="line">hexo <span class="built_in">help</span>             <span class="comment"># 帮助</span></span><br></pre></td></tr></table></figure>
-
-
-
-
-
-
-
-]]></content>
-      <categories>
-        <category>Others</category>
-      </categories>
-      <tags>
-        <tag>建站</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>php反序列化</title>
     <url>/2023/03/14/php%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/</url>
     <content><![CDATA[<h1 id="php反序列化"><a href="#php反序列化" class="headerlink" title="php反序列化"></a>php反序列化</h1><h2 id="PHP反序列化漏洞详解"><a href="#PHP反序列化漏洞详解" class="headerlink" title="PHP反序列化漏洞详解"></a>PHP反序列化漏洞详解</h2><p>各访问修饰符序列化后的区别：<br>public：属性被序列化的时候属性名还是原来的属性名，没有任何改变<br>protected：属性被序列化的时候属性名会变成%00*%00属性名，长度跟随属性名长度而改变<br>private：属性被序列化的时候属性名会变成%00类名%00属性名，长度跟随属性名长度而改变</p>
+<p>php版本7.0以上不敏感，可以不用修饰</p>
 <ul>
 <li>__construct() 当一个对象创建时被调用</li>
 </ul>
@@ -482,6 +348,147 @@
 <p><a href="https://www.freebuf.com/articles/web/263710.html">https://www.freebuf.com/articles/web/263710.html</a></p>
 <p><a href="https://blog.csdn.net/xxy605/article/details/120101090">https://blog.csdn.net/xxy605/article/details/120101090</a></p>
 ]]></content>
+      <categories>
+        <category>CTF</category>
+      </categories>
+      <tags>
+        <tag>PHP反序列化</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hexo+github搭建博客</title>
+    <url>/2023/03/13/hexo-github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</url>
+    <content><![CDATA[<h1 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h1><ol>
+<li>GitHub账号<br>需要有一个GitHub账号，没有的话到 官网 申请一个。<br>注册很简单，不懂的话可以参考 GitHub申请账号</li>
+<li>安装Git<br> 在自己电脑上安装好Git，hexo部署到GitHub时要用。<br> 网上找篇教程</li>
+<li>安装NodeJS<br>在自己电脑上安装好NodeJS，Hexo是基于NodeJS编写的，所以需要安装NodeJS和npm工具。<br>网上找篇教程</li>
+</ol>
+<h1 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h1><p>我们采用Hexo来创建我们的博客网站，Hexo 是一个基于NodeJS的静态博客网站生成器，使用Hexo不需开发，只要进行一些必要的配置即可生成一个个性化的博客网站，非常方便。点击进入 官网。</p>
+<p>安装 Hexo</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
+
+<p>查看版本</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo -v</span><br></pre></td></tr></table></figure>
+
+<p>创建一个项目 hexo-blog 并初始化</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo init hexo-blog</span><br><span class="line"><span class="built_in">cd</span> hexo-blog</span><br><span class="line">npm install</span><br></pre></td></tr></table></figure>
+
+<p>本地启动</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo g</span><br><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+
+
+<p>浏览器访问 <a href="http://localhost:4000，页面默认主图风格如下">http://localhost:4000，页面默认主图风格如下</a></p>
+<img src="/2023/03/13/hexo-github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/image-20230313232222727.png" class="" title="image-20230313232222727">
+
+
+
+
+
+<h1 id="创建仓库"><a href="#创建仓库" class="headerlink" title="创建仓库"></a>创建仓库</h1><p>在<code>GitHub</code>上创建一个新的代码仓库用于保存我们的网页。</p>
+<p>点击<code>Your repositories</code>，进入仓库页面。</p>
+<p>点击<code>New</code>按钮，进入仓库创建页面。</p>
+<p>填写仓库名，格式必须为<code>&lt;用户名&gt;.github.io</code>，然后点击<code>Create repository</code>。</p>
+<p>点击<code>creating a new file</code>创建一个新文件，作为我们网站的主页。</p>
+<h1 id="ssh连接"><a href="#ssh连接" class="headerlink" title="ssh连接"></a>ssh连接</h1><p>4.1生成SSH添加到GitHub</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">git config --global user.name <span class="string">&quot;yourname&quot;</span></span><br><span class="line">git config --global user.email <span class="string">&quot;youremail&quot;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这里的yourname输入你的GitHub用户名，youremail输入你GitHub的邮箱。这样GitHub才能知道你是不是对应它的账户。</p>
+<p>可以用以下两条，检查一下你有没有输对</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">git config user.name</span><br><span class="line">git config user.email</span><br></pre></td></tr></table></figure>
+
+
+
+<p>然后创建SSH,一路回车</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -C <span class="string">&quot;youremail&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>在gitbash中，查看是否成功</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+
+
+
+<p>如果失败更改端口</p>
+<p>操作方法：</p>
+<p>进入~&#x2F;.ssh下</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd ~/.ssh</span><br></pre></td></tr></table></figure>
+
+
+<p>创建一个config文件(这里我用的vim编辑器)</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">vim config</span><br></pre></td></tr></table></figure>
+
+
+<p>编辑文件内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Host github.com</span><br><span class="line">User git</span><br><span class="line">Hostname ssh.github.com</span><br><span class="line">PreferredAuthentications publickey</span><br><span class="line">IdentityFile ~/.ssh/id_rsa</span><br><span class="line">Port 443</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>保存退出<br>检查是否成功</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+
+<h1 id="将hexo部署到GitHub"><a href="#将hexo部署到GitHub" class="headerlink" title="将hexo部署到GitHub"></a>将hexo部署到GitHub</h1><p>这个时候需要先安装deploy-git ，也就是部署的命令,这样你才能用命令部署到GitHub。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+
+
+
+<p>这一步，我们就可以将hexo和GitHub关联起来，也就是将hexo生成的文章部署到GitHub上，打开站点配置文件 _config.yml，翻到最后，修改为<br>YourgithubName就是你的GitHub账户</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  <span class="built_in">type</span>: git</span><br><span class="line">  repo: https://github.com/YourgithubName/YourgithubName.github.io.git</span><br><span class="line">  branch: main</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p>然后</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+
+
+
+<p>若启动连接失败，输入以下命令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">git config --global --<span class="built_in">unset</span> http.proxy</span><br><span class="line">git config --global --<span class="built_in">unset</span> https.proxy</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="模板导入"><a href="#模板导入" class="headerlink" title="模板导入"></a>模板导入</h1><p>在hexo项目根目录下执行操作clone主题</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> -b master https://github.com/jerryc127/hexo-theme-butterfly.git themes/butterfly</span><br></pre></td></tr></table></figure>
+
+<p>如果沒有 pug 以及 <a href="https://so.csdn.net/so/search?q=stylus&spm=1001.2101.3001.7020">stylus</a> 的渲染器，还需要下载，否则在项目运行时会报错：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm install hexo-renderer-pug hexo-renderer-stylus --save</span><br></pre></td></tr></table></figure>
+
+<p>3、修改项目根目录下的_config.yml文件（称为站点配置文件），开启主题</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment">#theme: landscape</span></span><br><span class="line">theme: butterfly</span><br></pre></td></tr></table></figure>
+
+
+
+<p>若出现乱码</p>
+<p>原因是<a href="https://so.csdn.net/so/search?q=hexo&spm=1001.2101.3001.7020">hexo</a>在5.0之后把swig给删除了需要自己手动安装</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm i hexo-renderer-swig</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="解决：hexo-github本地和线上图片不显示问题"><a href="#解决：hexo-github本地和线上图片不显示问题" class="headerlink" title="解决：hexo+github本地和线上图片不显示问题"></a>解决：hexo+github本地和线上图片不显示问题</h2><p>在搭载好hexo(butterfly)+github博客后（有道云笔记记录），新建博客无法图片问题，多方寻找网上的解决办法仍未解决，大多安装了hexo-asset-image插件来解决，但是本人多项测试后，均为无效，唯一有效的需要将图片格式转换为这样，但是以一个一个去转换非常麻烦，因此继续寻求解决办法，最终找到如下帖子：<a href="https://moeci.com/posts/hexo-typora/%EF%BC%8C%E8%BF%99%E4%BD%8D%E5%A4%A7%E4%BD%AC%E5%BC%80%E5%8F%91%E7%9A%84%E6%8F%92%E4%BB%B6%E6%98%AFhexo-asset-img%EF%BC%8C%E8%80%8C%E9%9D%9Ehexo-asset-image%EF%BC%8C%E7%BB%8F%E8%BF%87%E6%B5%8B%E8%AF%95%EF%BC%8C%E6%9C%89%E6%95%88">https://moeci.com/posts/hexo-typora/，这位大佬开发的插件是hexo-asset-img，而非hexo-asset-image，经过测试，有效</a></p>
+<p>1配置 <a href="https://so.csdn.net/so/search?q=Typora&spm=1001.2101.3001.7020">Typora</a> 偏好设置，如下图更改，此操作将图片文件保存路径: .&#x2F;${filename} 即保存到与 当前正在编辑的文件名相同的同级文件夹下。</p>
+<img src="/2023/03/13/hexo-github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/image-20230313233951219.png" class="" title="image-20230313233951219">
+
+
+
+<p>修改_config.yml中的post_asset_folder，false 改为 true，这样修改后，每次 ‘hexo new page’ 生成新文章，都会在文章文件同级目录创建一个与文章文件名同名的文件夹，我们就在这里存放此文章的图片。</p>
+<p>安装插件hexo-asset-img：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install hexo-asset-img --save</span><br><span class="line">hexo clean &amp;&amp; hexo g &amp;&amp; hexo d</span><br></pre></td></tr></table></figure>
+
+<p>完成安装</p>
+<h2 id="导航栏"><a href="#导航栏" class="headerlink" title="导航栏"></a>导航栏</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo new page <span class="string">&quot;about&quot;</span></span><br><span class="line">hexo new page <span class="string">&quot;tags&quot;</span></span><br><span class="line">hexo new page <span class="string">&quot;categories&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">title: about</span><br><span class="line"><span class="built_in">date</span>: 2019-06-25 19:16:17</span><br><span class="line"><span class="built_in">type</span>: <span class="string">&quot;about&quot;</span></span><br><span class="line">---</span><br><span class="line"> </span><br><span class="line">---</span><br><span class="line">title: about</span><br><span class="line"><span class="built_in">date</span>: 2019-06-25 19:16:17</span><br><span class="line"><span class="built_in">type</span>: <span class="string">&quot;tags&quot;</span></span><br><span class="line">---</span><br><span class="line"> </span><br><span class="line">---</span><br><span class="line">title: about</span><br><span class="line"><span class="built_in">date</span>: 2019-06-25 19:16:17</span><br><span class="line"><span class="built_in">type</span>: <span class="string">&quot;categories&quot;</span></span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+
+<h3 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a><strong>常用命令</strong></h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo new “name”       <span class="comment"># 新建文章</span></span><br><span class="line"></span><br><span class="line">hexo new page “name”  <span class="comment"># 新建页面</span></span><br><span class="line"></span><br><span class="line">hexo g                <span class="comment"># 生成页面</span></span><br><span class="line"></span><br><span class="line">hexo d                <span class="comment"># 部署</span></span><br><span class="line"></span><br><span class="line">hexo g -d             <span class="comment"># 生成页面并部署</span></span><br><span class="line"></span><br><span class="line">hexo s                <span class="comment"># 本地预览</span></span><br><span class="line"></span><br><span class="line">hexo clean            <span class="comment"># 清除缓存和已生成的静态文件</span></span><br><span class="line"></span><br><span class="line">hexo <span class="built_in">help</span>             <span class="comment"># 帮助</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+]]></content>
+      <categories>
+        <category>Others</category>
+      </categories>
+      <tags>
+        <tag>建站</tag>
+      </tags>
   </entry>
   <entry>
     <title>re匹配规则</title>
