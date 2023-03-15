@@ -81,25 +81,7 @@
 
 
 
-
-
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">iTransformers[<span class="number">3</span>] ==InvokerTransformer</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -111,6 +93,12 @@
 <p>答案是不行的。虽然单看整个链，无论是定义还是执行都是没有任何问题的，但是在后续序列化时，由于<code>Runtime.getRuntime()</code>得到的是一个对象，这个对象也需要参与序列化过程，而<code>Runtime</code>本身是没有实现<code>Serializable</code>接口的，所以会导致序列化失败。</p>
 <p>也有同学可能看过ysoserial构造的Payload，它的习惯是先定义一个包含『无效』<code>Transformer</code>的<code>ChainedTransformer</code>，等所有对象装填完毕之后再利用反射将实际的数组放进去。这么做的原因作者也在一个Issue中给了解释，我们直接看原文：</p>
 ]]></content>
+      <categories>
+        <category>JAVA</category>
+      </categories>
+      <tags>
+        <tag>JAVA</tag>
+      </tags>
   </entry>
   <entry>
     <title>JWT</title>
