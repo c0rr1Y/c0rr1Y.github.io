@@ -20,3 +20,4 @@ http://example.com/tags/python/
 http://example.com/categories/JAVA/
 http://example.com/categories/CTF/
 http://example.com/categories/Others/
+http://example.com/categories/JAVA/CTF/
