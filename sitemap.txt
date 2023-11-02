@@ -1,3 +1,4 @@
+http://example.com/2023/11/02/thinkphp%E5%A4%9A%E8%AF%AD%E8%A8%80RCE/
 http://example.com/2023/10/31/%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E5%B0%8F%E8%AE%B0-ssh/
 http://example.com/2023/10/31/Gemini-Pentest-v1/
 http://example.com/2023/09/09/Fastjson%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93/
@@ -40,5 +41,6 @@ http://example.com/tags/mysql/
 http://example.com/tags/php/
 http://example.com/tags/%E9%9D%B6%E6%9C%BA%E6%B8%97%E9%80%8F/
 http://example.com/tags/%E5%90%8E%E6%B8%97%E9%80%8F/
+http://example.com/tags/thinkphp/
 http://example.com/categories/CTFWP/
 http://example.com/categories/Others/

