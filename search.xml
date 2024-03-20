@@ -2298,11 +2298,12 @@
 <p>5.frps吧frpc和攻击机的流量互相转发，将frps服务器当成流量中转站，也就是VPS将攻击机的流量转发给内网WEB服务器，把内网WEB服务器的流量转发给攻机。</p>
 <h2 id="frp-实验"><a href="#frp-实验" class="headerlink" title="frp 实验"></a>frp 实验</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">命令：./frps -c frps.toml</span><br></pre></td></tr></table></figure>
 
-
-
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">后台运行：nohup./frps -c frps.toml&gt;/dev/null 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
 
 
+
+<p>客户端</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[common]</span><br><span class="line">server_addr = 192.168.6.142    &lt;vpsIP&gt;</span><br><span class="line">server_port = 7000</span><br><span class="line"></span><br><span class="line">[proxies]</span><br><span class="line">type = tcp</span><br><span class="line">remote_port = 7777</span><br><span class="line">plugin = socks5</span><br><span class="line">local_ip = 192.168.183.128  &lt;需要代理的网卡IP&gt;</span><br><span class="line">local_port= 7777</span><br></pre></td></tr></table></figure>
 
 
 
@@ -2991,6 +2992,117 @@
 
 
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">proxychains rdesktop 192.168.183.130:3389  </span><br></pre></td></tr></table></figure>
+
+
+
+
+
+]]></content>
+  </entry>
+  <entry>
+    <title>ATTCK2</title>
+    <url>/2024/03/20/ATTCK2/</url>
+    <content><![CDATA[<h1 id="实验环境"><a href="#实验环境" class="headerlink" title="实验环境"></a>实验环境</h1><p>web</p>
+<p>administrator&#x2F;1qaz!QAZ</p>
+<p>其他用户都是 1qaz@WSX</p>
+<p>web IP 192.168.6.192(192.168.6.194)</p>
+<p>内网IP 10.10.10.80</p>
+<p>PC IP 192.168.6.193</p>
+<p>内网IP 10.01.10.201</p>
+<p>DC 内网IP 10.101.10.10</p>
+<h1 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h1><p>探测内网存活主机</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">arp-scan -l</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK2/image-20240312163212285.png" class="" title="image-20240312163212285">
+
+
+
+<p>扫描存活主机端口</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">nmap -sS -p- 192.168.6.192 </span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK2/image-20240312164458331.png" class="" title="image-20240312164458331">
+
+
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">nmap -sS -p- 192.168.6.193</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK2/image-20240312164512495.png" class="" title="image-20240312164512495">
+
+
+
+<h1 id="web渗透"><a href="#web渗透" class="headerlink" title="web渗透"></a>web渗透</h1><p>访问 192.168.6.192:7001 </p>
+<p>7001端口是weblogic的默认端口</p>
+<p>使用weblogicTool工具进行测试</p>
+<img src="/2024/03/20/ATTCK2/image-20240312170138391.png" class="" title="image-20240312170138391">
+
+
+
+<img src="/2024/03/20/ATTCK2/image-20240312170155637.png" class="" title="image-20240312170155637">
+
+
+
+<p>使用蚁剑连接</p>
+<p>使用CS设置监听器，生成后门exe文件通过蚁剑上传到主机</p>
+<img src="/2024/03/20/ATTCK2/image-20240312170647728.png" class="" title="image-20240312170647728">
+
+<img src="/2024/03/20/ATTCK2/image-20240312170658133.png" class="" title="image-20240312170658133">
+
+
+
+<img src="/2024/03/20/ATTCK2/image-20240312170708608.png" class="" title="image-20240312170708608">
+
+<img src="/2024/03/20/ATTCK2/image-20240312170542060.png" class="" title="image-20240312170542060">
+
+
+
+<h1 id="横向移动"><a href="#横向移动" class="headerlink" title="横向移动"></a>横向移动</h1><p>shell ipconfig</p>
+<p>发现内网网段</p>
+<img src="/2024/03/20/ATTCK2/image-20240312171156724.png" class="" title="image-20240312171156724">
+
+<p><strong>使用cs的portcan模块来进行内网其他机器扫描</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">portscan 10.10.10.0-10.10.10.255 139,445 arp 1024</span><br></pre></td></tr></table></figure>
+
+
+
+<img src="/2024/03/20/ATTCK2/image-20240312172802096.png" class="" title="image-20240312172802096">
+
+
+
+<p>内网主机IP且139与445端口均开启</p>
+<p>10.10.10.10</p>
+<p>10.10.10.201</p>
+<p>右键-&gt;凭证提权-&gt;抓取明文密码</p>
+<p>获得域内用户密码</p>
+<p>建立SMB监听器</p>
+<img src="/2024/03/20/ATTCK2/image-20240313105519009.png" class="" title="image-20240313105519009">
+
+
+
+<p>利用获得的账号密码进行横向渗透</p>
+<img src="/2024/03/20/ATTCK2/image-20240313105619570.png" class="" title="image-20240313105619570">
+
+
+
+
+
+<img src="/2024/03/20/ATTCK2/image-20240313105726348.png" class="" title="image-20240313105726348">
+
+
+
+<p>另一台同理</p>
+<img src="/2024/03/20/ATTCK2/image-20240313105757130.png" class="" title="image-20240313105757130">
+
+
+
+
+
+
+
+
+
+
 
 
 
